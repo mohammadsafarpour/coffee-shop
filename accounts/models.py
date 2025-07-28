@@ -1,19 +1,20 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-# Create your models here.
 
 class CustomUser(AbstractUser):
-    name = models.CharField()
+    name = models.CharField(max_length=100)
     username = None
-    email = models.EmailField()
+    email = models.EmailField(unique=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
     phone = models.CharField(max_length=11, unique=True)
-    password = models.CharField(max_length=11, unique=True)
-    password_confirmation = models.CharField(max_length=11, unique=True)
-    photo = models.ImageField(null=True, blank=True)
-
+    # password = models.CharField(max_length=11, unique=True)
+    # password_confirmation = models.CharField(max_length=11, unique=True)
+    photo = models.ImageField(upload_to="avatars/", null=True, blank=True)
+    
+    def __str__(self):
+        return self.email
 
 class Profile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
