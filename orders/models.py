@@ -6,9 +6,13 @@ from products.models import Product
 
 
 class Order(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('delivered', 'Delivered'),
+    ]
     customer = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    status = models.BooleanField(choices=[('pending', 'Pending'), ('delivered', 'Delivered')], default='Delivered')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
 
 
 class OrderItem(models.Model):
