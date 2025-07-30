@@ -10,4 +10,7 @@ class OrderAdminInline(admin.TabularInline):
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'customer', 'created_at', 'status']
     list_filter = ['customer', 'created_at', 'status']
-    
+    search_fields = ['created_at']
+    # search_fields = ['customer__username']
+    inlines = [OrderAdminInline]
+    readonly_fields = ['created_at']
