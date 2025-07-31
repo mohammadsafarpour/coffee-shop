@@ -6,4 +6,3 @@ from .models import Order, OrderItem
 def order_list(request):
     orders = Order.objects.all()
     return render(request, 'orders/list.html', {'orders': orders})
-    
