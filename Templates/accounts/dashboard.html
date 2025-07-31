@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}داشبورد کاربری{% endblock %}
+
+{% block content %}
+  <h2>سلام {{ user.phone }}!</h2>
+  <p>به داشبورد خود خوش آمدید.</p>
+
+  <hr>
+
+  <h3>لیست علاقه‌مندی‌های شما</h3>
+  {% if user.profile.favorites.all %}
+    <ul>
+      {% for product in user.profile.favorites.all %}
+        <li>
+          {{ product.name }}
+          <a href="{% url 'remove_from_favorites' product.id %}">(حذف)</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>شما هنوز هیچ محصولی را به لیست علاقه‌مندی‌های خود اضافه نکرده‌اید.</p>
+  {% endif %}
+{% endblock %}

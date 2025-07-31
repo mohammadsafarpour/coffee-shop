@@ -4,6 +4,16 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+*.pyc
+*.pyo
+
+# Database files
+*.sqlite3
+
+# Log and backup files
+*.log
+*.bak
+
 # C extensions
 *.so
 
@@ -37,6 +47,13 @@ media/
 staticfiles/
 static/
 
+# Django migrations (untracked if you don't want to commit them)
+accounts/migrations/
+notification/migrations/
+orders/migrations/
+products/migrations/
+review/migrations/
+
 # VS Code
 .vscode/
 
@@ -51,3 +68,5 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 
+
+Maktab130_Group_project_1.pdf
