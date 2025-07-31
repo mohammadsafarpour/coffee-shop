@@ -8,7 +8,7 @@ class OrderAdminInline(admin.TabularInline):
     
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'customer', 'created_at', 'status', 'total_price']
+    list_display = ['id', 'customer', 'created_at', 'status']
     list_filter = ['customer', 'created_at', 'status']
     search_fields = ['created_at']
     # search_fields = ['customer__username']
