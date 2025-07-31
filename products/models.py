@@ -108,7 +108,6 @@ class Product(models.Model):
     is_active = models.BooleanField(default=True)
 
 
-
     def __str__(self):
         return self.name
 
@@ -124,7 +123,11 @@ class ProductImage(models.Model):
     image = models.ImageField(upload_to='products/')
 
     def __str__(self):
-        return f"Image for {self.product.name}"
+        return f"{self.product.name} Image"
+    
+    class Meta:
+        ordering = ['id']
+        verbose_name = "Product Image"
 
 class Favorite(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -136,4 +139,4 @@ class Favorite(models.Model):
         unique_together = ('user', 'product')
 
     def __str__(self):
-        return f"{self.user} {self.product}"
+        return f"{self.user.username} - {self.product.name}"
