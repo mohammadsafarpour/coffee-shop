@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Logged out{% endblock %}
+{% block content %}
+<div style="text-align:center; margin-top:50px;">
+    <h1 style="color:#4CAF50;">شما با موفقیت خارج شدید</h1>
+    <p style="font-size:18px;">امیدواریم دوباره شما را ببینیم. برای ورود مجدد روی دکمه زیر کلیک کنید:</p>
+    <a href="{% url 'login' %}" style="display:inline-block; padding:10px 25px; background:#4CAF50; color:#fff; border-radius:5px; text-decoration:none; font-size:16px; margin-top:20px;">ورود مجدد</a>
+</div>
+{% endblock %}

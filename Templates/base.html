@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}کافه من{% endblock %}</title>
+    </head>
+<body>
+
+<header>
+    <h1>کافه آنلاین</h1>
+    <nav>
+        <a href="{% url 'home' %}">صفحه اصلی</a> |
+        {% if user.is_authenticated %}
+            <span>سلام، {{ user.phone }}!</span> |
+            <a href="{% url 'dashboard' %}">داشبورد</a> |
+            <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit">خروج</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}">ورود</a> |
+            <a href="{% url 'signup' %}">ثبت‌نام</a>
+        {% endif %}
+    </nav>
+</header>
+<hr>
+
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
+
+<footer>
+    <hr>
+    <p>&copy;
+        
+    </p>
+</footer>
+
+</body>
+</html>

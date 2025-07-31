@@ -1,48 +1,70 @@
-from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.db.models.signals import post_save
+
 
 class CustomUserManager(BaseUserManager):
-    use_in_migrations = True
 
-    def create_user(self, email, password=None, **extra_fields):
+    def create_user(self, phone, email, password=None, **extra_fields):
+        
+        if not phone:
+            raise ValueError('برای ثبت‌نام، وارد کردن شماره تلفن الزامی است.')
         if not email:
-            raise ValueError('Email must be set')
+            raise ValueError('برای ثبت‌نام، وارد کردن ایمیل الزامی است.')
+        
         email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
+        user = self.model(phone=phone, email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password=None, **extra_fields):
+    def create_superuser(self, phone, email, password=None, **extra_fields):        
+        
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
 
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
+            
+        return self.create_user(phone, email, password, **extra_fields)
 
-        return self.create_user(email, password, **extra_fields)
 
 class CustomUser(AbstractUser):
-    name = models.CharField(max_length=100, verbose_name=_("Full Name"))
+
     username = None
-    email = models.EmailField(unique=True, verbose_name=_("Email Address"))
-    phone = models.CharField(max_length=11, unique=True, verbose_name=_("Phone Number"))
-    photo = models.ImageField(upload_to="avatars/", null=True, blank=True, verbose_name=_("Profile Photo"))
+    email = models.EmailField(unique=True, null=True, blank=True)
+    USERNAME_FIELD = 'phone'
+    REQUIRED_FIELDS = ['email']
+    phone = models.CharField(max_length=11, unique=True)
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS: list[str] = []
-
+    photo = models.ImageField(upload_to="avatars/", null=True, blank=True)
+    
     objects = CustomUserManager()
 
     def __str__(self):
-        return self.email
-
+        return self.phone
 
 class Profile(models.Model):
+
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    bio = models.TextField(blank=True, null=True)
-    location = models.CharField(max_length=100, blank=True, null=True)
+    first_name = models.CharField(max_length=100, blank=True, null=True)
+    last_name = models.CharField(max_length=100, blank=True, null=True)
+    avatar = models.ImageField(upload_to="profiles/avatars/", null=True, blank=True)
+
+    # favorites = models.ManyToManyField(Product, blank=True, verbose_name="علاقه‌مندی‌ها")
+
+    def __str__(self):
+        return f"پروفایل {self.user.phone}"
+    
+
+
+def create_user_profile(sender, instance, created, **kwargs):
+
+    if created:
+        Profile.objects.create(user=instance)
+
+
+post_save.connect(create_user_profile, sender=CustomUser)
