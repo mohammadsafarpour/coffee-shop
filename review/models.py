@@ -1,5 +1,5 @@
 from django.db import models
-from notification.models import Order
+from orders.models import Order
 from accounts.models import CustomUser
 from products.models import Product
 

@@ -36,6 +36,6 @@ class OrderItem(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
     
-# class Whishlist(models.Model):
+# class WhishList(models.Model):
 #     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-#     products = models.ManyToManyField(Product, related_name='wishlisted_by')
+#     products = models.ManyToManyField(Product, related_name='wishListed_by')
