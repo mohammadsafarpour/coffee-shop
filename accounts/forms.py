@@ -1,4 +1,4 @@
-# from django import forms
+from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import CustomUser
 
@@ -25,3 +25,9 @@ class CustomUserChangeForm(UserChangeForm):
 # class LoginForm(forms.Form): 
 #     email = forms.EmailField()
 #     password = forms.CharField(widget=forms.PasswordInput)
+
+from django.contrib.auth.forms import AuthenticationForm
+
+class EmailAuthenticationForm(AuthenticationForm):
+
+    username = forms.EmailField(label="Email Address", max_length=255)
