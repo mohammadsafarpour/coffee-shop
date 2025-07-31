@@ -9,12 +9,15 @@
 
 # products/admin.py
 
+#-----------------------------------
+# ----------------------------------
+
 from django.contrib import admin
 from .models import Product, Category, Ingredient, ProductImage, Favorite
 
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
-    extra = 1 
+    extra = 1
 
 class IngredientInline(admin.TabularInline):
     model = Ingredient
@@ -22,16 +25,17 @@ class IngredientInline(admin.TabularInline):
 
 class FavoriteInline(admin.TabularInline):
     model = Favorite
-    extra = 1
-    readonly_fields = ('title', 'product')
+    extra = 0
+    readonly_fields = ('user', 'product', 'created_at')
+    can_delete = False
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'price', 'is_active')
     list_filter = ('category', 'is_active')
     search_fields = ('name', 'description')
-    prepopulated_fields = {'slug': ('name',)} 
-    inlines = [ProductImageInline, IngredientInline, FavoriteInline] 
+    prepopulated_fields = {'slug': ('name',)}
+    inlines = [ProductImageInline, IngredientInline]
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -46,3 +50,8 @@ class IngredientAdmin(admin.ModelAdmin):
 @admin.register(ProductImage)
 class ProductImageAdmin(admin.ModelAdmin):
     list_display = ('product', 'image')
+
+@admin.register(Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('user', 'product', 'created_at')
+    readonly_fields = ('created_at',)
