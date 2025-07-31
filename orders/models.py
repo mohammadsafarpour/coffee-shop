@@ -3,7 +3,6 @@ from accounts.models import CustomUser
 from products.models import Product
 
 
-
 class Order(models.Model):
     class Status(models.TextChoices):
         PENDING = 'pe', 'Pending'
@@ -14,7 +13,11 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     is_paid = models.BooleanField(default=False)
     status = models.CharField(max_length=10, choices=Status, default=Status.PENDING)
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    @property
+    def calculate_total_price(self):
+        return sum(item.price * item.quantity for item in self.order_items.all())
+
     class Meta:
         ordering = ['-created_at']
         indexes = [
@@ -23,11 +26,10 @@ class Order(models.Model):
             # models.Index(fields=['customer']),
         ]
     def __str__(self):
-        return f"Order #{self.id} - {self.customer.username}"
+        return f"Order #{self.id} - {self.customer.email}"
     
     # def get_total_items(self):
-    #     return sum(item.quantity for item in self.orderitem_set.all())
-    
+    #     return sum(item.quantity for item in self.orderitem_set.all())  
     
 
 class OrderItem(models.Model):
@@ -35,7 +37,10 @@ class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
-    
+
+    class Meta:
+        unique_together = ('order', 'product')
+
 # class WhishList(models.Model):
 #     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
 #     products = models.ManyToManyField(Product, related_name='wishListed_by')
