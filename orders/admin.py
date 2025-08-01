@@ -8,9 +8,16 @@ class OrderAdminInline(admin.TabularInline):
     
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
+<<<<<<< Updated upstream
     list_display = ['id', 'customer', 'created_at', 'status', 'total_price']
+=======
+    list_display = ['id', 'customer', 'created_at', 'status', 'display_total_price']
+>>>>>>> Stashed changes
     list_filter = ['customer', 'created_at', 'status']
-    search_fields = ['created_at']
-    # search_fields = ['customer__username']
+    search_fields = ['id', 'customer__username']
     inlines = [OrderAdminInline]
     readonly_fields = ['created_at', 'updated_at']
+    
+    def display_total_price(self, obj):
+        return f"${obj.total_price:.2f}"
+    display_total_price.short_description = 'Total Price'
