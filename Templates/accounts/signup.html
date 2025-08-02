@@ -8,12 +8,12 @@
         <h2 class="text-3xl font-bold text-center text-amber-400 mb-8">ایجاد حساب کاربری جدید</h2>
         
         <form method="post" class="space-y-6">
-    {% csrf_token %}
-    {{ form.as_p }}
+            {% csrf_token %}
+            {{ form.as_p }}
             <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
                 ثبت‌نام
             </button>
-  </form>
+        </form>
         <p class="text-center text-gray-400 mt-6">
             قبلاً ثبت‌نام کرده‌اید؟ <a href="{% url 'login' %}" class="text-amber-400 hover:underline">وارد شوید</a>
         </p>

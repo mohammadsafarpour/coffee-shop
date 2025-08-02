@@ -50,7 +50,7 @@
             box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3);
         }
     </style>
-    </head>
+</head>
 <body class="bg-gray-900 text-white">
 
     <!-- Header -->
@@ -58,33 +58,33 @@
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="{% url 'home' %}" class="text-2xl font-bold text-amber-400">تمیز کافه</a>
             <div class="flex items-center space-x-6 space-x-reverse">
-        {% if user.is_authenticated %}
+                {% if user.is_authenticated %}
                     <span class="text-gray-300 hidden sm:block">سلام، {{ user.phone }}!</span>
                     <a href="{% url 'dashboard' %}" class="hover:text-amber-400 transition-colors duration-300">داشبورد</a>
-            <form action="{% url 'logout' %}" method="post" style="display: inline;">
-                {% csrf_token %}
+                    <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                        {% csrf_token %}
                         <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300">خروج</button>
-            </form>
-        {% else %}
+                    </form>
+                {% else %}
                     <a href="{% url 'login' %}" class="hover:text-amber-400 transition-colors duration-300">ورود</a>
                     <a href="{% url 'signup' %}" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-2 px-4 rounded-lg transition-colors duration-300">ثبت‌نام</a>
-        {% endif %}
+                {% endif %}
             </div>
-    </nav>
-</header>
+        </nav>
+    </header>
 
     <!-- Main Content -->
     <main class="container mx-auto px-6 py-12 min-h-screen">
-    {% block content %}
-    {% endblock %}
-</main>
+        {% block content %}
+        {% endblock %}
+    </main>
 
     <!-- Footer -->
     <footer class="bg-gray-900 border-t border-gray-800">
         <div class="container mx-auto px-6 py-8 text-center text-gray-500">
             <p>&copy; {% now "Y" %} کافه پارسی. تمام حقوق محفوظ است.</p>
         </div>
-</footer>
+    </footer>
 
 </body>
 </html>
