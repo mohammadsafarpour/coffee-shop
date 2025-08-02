@@ -3,10 +3,20 @@
 {% block title %}ثبت‌نام{% endblock %}
 
 {% block content %}
-  <h2>ثبت‌نام کاربر جدید</h2>
-  <form method="post">
+<div class="flex justify-center items-center py-10">
+    <div class="w-full max-w-md glass-card rounded-2xl p-8">
+        <h2 class="text-3xl font-bold text-center text-amber-400 mb-8">ایجاد حساب کاربری جدید</h2>
+        
+        <form method="post" class="space-y-6">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">ثبت‌نام</button>
+            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
+                ثبت‌نام
+            </button>
   </form>
+        <p class="text-center text-gray-400 mt-6">
+            قبلاً ثبت‌نام کرده‌اید؟ <a href="{% url 'login' %}" class="text-amber-400 hover:underline">وارد شوید</a>
+        </p>
+    </div>
+</div>
 {% endblock %}

@@ -26,7 +26,7 @@ class IngredientInline(admin.TabularInline):
 class FavoriteInline(admin.TabularInline):
     model = Favorite
     extra = 0
-    readonly_fields = ('user', 'product', 'created_at')
+    readonly_fields = ('product',)
     can_delete = False
 
 @admin.register(Product)
