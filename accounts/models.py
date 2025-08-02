@@ -54,7 +54,7 @@ class Profile(models.Model):
     last_name = models.CharField(max_length=100, blank=True, null=True)
     avatar = models.ImageField(upload_to="profiles/avatars/", null=True, blank=True)
 
-    favorites = models.ManyToManyField(Product, blank=True, verbose_name="علاقه‌مندی‌ها")
+    # favorites = models.ManyToManyField(Product, blank=True, verbose_name="علاقه‌مندی‌ها")
 
     def __str__(self):
         return f"پروفایل {self.user.phone}"
