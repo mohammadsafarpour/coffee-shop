@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ product.name }}</title>
+    <style>
+        .product-gallery img {
+            max-width: 300px;
+            border-radius: 10px;
+        }
+        .thumbnail {
+            cursor: pointer;
+            max-width: 80px;
+            margin: 5px;
+            opacity: 0.6;
+        }
+        .thumbnail.active {
+            opacity: 1;
+            border: 2px solid #000;
+        }
+    </style>
+    <script>
+        function switchImage(src, thumb) {
+            document.getElementById("mainImage").src = src;
+            document.querySelectorAll(".thumbnail").forEach(t => t.classList.remove("active"));
+            thumb.classList.add("active");
+        }
+    </script>
+</head>
+<body>
+
+<h1>{{ product.name }}</h1>
+<p>{{ product.description }}</p>
+<p>💰 قیمت: {{ product.price }} تومان</p>
+<p>📦 موجودی انبار: {{ product.stock }}</p>
+
+<div class="product-gallery">
+    {% if product.images.all %}
+        <img id="mainImage" src="{{ product.images.all.0.image.url }}" alt="{{ product.images.all.0.alt_text }}">
+        <div>
+            {% for image in product.images.all %}
+                <img class="thumbnail {% if forloop.first %}active{% endif %}" src="{{ image.image.url }}" onclick="switchImage('{{ image.image.url }}', this)">
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>تصویری برای این محصول موجود نیست.</p>
+    {% endif %}
+</div>
+
+<form method="POST" action="{% url 'add_to_cart' product.id %}">
+    {% csrf_token %}
+    <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}">
+    <button type="submit">🛒 افزودن به سبد خرید</button>
+</form>
+
+</body>
+</html>
