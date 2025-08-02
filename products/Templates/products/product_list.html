@@ -6,17 +6,24 @@
     <title>Products</title>
 </head>
 <body>
-    <a href="{% url 'product-add' %}">➕ product add</a>
     
     <h1> product list </h1>
 
 <ul>
   {% for product in products %}
-    <li>{{ product.name }} - {{ product.price }} تومان</li>
+  <li>
+    {{ product.name }} - {{ product.price }} تومان<br>
+    {% if product.image %}
+      <img src="{{ product.image.url }}" alt="{{ product.name }}" width="150">
+    {% else %}
+      <p> there is no image </p>
+    {% endif %}
+  </li>
   {% empty %}
     <li> There is no product </li>
   {% endfor %}
 </ul>
+
     
 </body>
 </html>
