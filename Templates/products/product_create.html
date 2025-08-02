@@ -1,21 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Creating Product</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h2> add new product </h2>
+{% block title %}افزودن محصول جدید{% endblock %}
 
-<form method="post" enctype="multipart/form-data">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">save</button>
-</form>
-
-<a href="{% url 'product-list' %}"> return to product list</a>
-    
-</body>
-</html>
+{% block content %}
+<div class="flex justify-center items-center py-10">
+    <div class="w-full max-w-lg glass-card rounded-2xl p-8">
+        <h2 class="text-3xl font-bold text-center text-amber-400 mb-8">افزودن محصول جدید</h2>
+        
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Custom styling for file input -->
+            <style>
+                input[type="file"] {
+                    background-color: rgba(255, 255, 255, 0.1);
+                    border: 1px dashed rgba(255, 255, 255, 0.3);
+                    padding: 1rem;
+                    cursor: pointer;
+                }
+                input[type="file"]::-webkit-file-upload-button {
+                    display: none;
+                }
+                input[type="file"]::before {
+                    content: 'انتخاب عکس محصول';
+                    display: inline-block;
+                    background: #f59e0b; /* amber-500 */
+                    color: #121212;
+                    padding: 0.5rem 1rem;
+                    border-radius: 0.375rem;
+                    cursor: pointer;
+                    margin-left: 1rem;
+                }
+            </style>
+            
+            {{ form.as_p }}
+            
+            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
+                ذخیره محصول
+            </button>
+        </form>
+        <p class="text-center text-gray-400 mt-6">
+            <a href="{% url 'product-list' %}" class="text-amber-400 hover:underline">بازگشت به لیست محصولات</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
