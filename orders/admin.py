@@ -17,3 +17,10 @@ class OrderAdmin(admin.ModelAdmin):
     def display_total_price(self, obj):
         return f"${obj.total_price:.2f}"
     display_total_price.short_description = 'Total Price'
+    
+    # def save_related(self, request, form, formsets, change):    <==  Instead of a signals.py
+    #     super().save_related(request, form, formsets, change)
+    #     for item in form.instance.order_items.all():
+    #         if item.product and (item.price is None or item.price == 0):
+    #             item.price = item.product.price * item.quantity
+    #             item.save()
