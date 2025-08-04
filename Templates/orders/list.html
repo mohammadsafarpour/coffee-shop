@@ -1,5 +1,6 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load static %}
+{% load humanize %}  <!-- گام ۱: کتابخانه در اینجا بارگذاری می‌شود -->
 
 {% block title %}لیست سفارشات من{% endblock %}
 
@@ -27,7 +28,9 @@
                                 {% for item in order.order_items.all %}
                                     <li class="flex justify-between items-center">
                                         <span>{{ item.product.name }} <span class="text-gray-400">× {{ item.quantity }}</span></span>
-                                        <span class="text-gray-300">{{ item.price }} تومان</span>
+                                        <!-- گام ۲: قیمت این ردیف با کاما نمایش داده می‌شود -->
+                                        <!-- نکته: از item.total_price استفاده کردیم که قیمت * تعداد است -->
+                                        <span class="text-gray-300">{{ item.total_price|intcomma }} تومان</span>
                                     </li>
                                 {% endfor %}
                             </ul>
@@ -36,7 +39,8 @@
 
                     <div class="mt-6 border-t border-amber-500 border-opacity-50 pt-4 text-left">
                         <span class="text-gray-300">مبلغ کل:</span>
-                        <span class="text-xl font-bold text-amber-400">{{ order.total_price }} تومان</span>
+                        <!-- گام ۳: مبلغ کل با کاما نمایش داده می‌شود -->
+                        <span class="text-xl font-bold text-amber-400">{{ order.total_price|intcomma }} تومان</span>
                     </div>
                 </div>
             {% endfor %}
