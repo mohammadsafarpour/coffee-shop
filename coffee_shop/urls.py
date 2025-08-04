@@ -36,6 +36,7 @@ urlpatterns = [
     path('orders/', include('orders.urls'), name='orders'),
     path('products/', include('products.urls'), name='products'),
     path('create/', ProductCreateView.as_view(), name='product-create'),
+    path('notification/', include('notification.urls')),
     
 ]
 
