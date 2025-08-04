@@ -18,7 +18,8 @@ class Product(models.Model):
     description = models.TextField(blank=True)
     price = models.PositiveIntegerField()
     is_active = models.BooleanField(default=True)
-
+    stock = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
@@ -33,16 +34,17 @@ class Ingredient(models.Model):
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='products/')
+    alt_text = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
-        return f"{self.product.name} Image"
-    
+        return f"Image for {self.product.name}"
+        
     class Meta:
         ordering = ['id']
         verbose_name = "Product Image"
 
 class Favorite(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     title = models.CharField(max_length=200, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

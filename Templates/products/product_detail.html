@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+    <!-- Image Gallery -->
+    <div class="glass-card rounded-2xl p-6">
+        {% with images=product.images.all %}
+            {% if images %}
+                <img id="mainImage" src="{{ images.0.image.url }}" alt="{{ images.0.alt_text|default:product.name }}" class="w-full h-96 object-cover rounded-lg mb-4">
+                <div class="flex space-x-4 space-x-reverse overflow-x-auto pb-2">
+                    {% for image in images %}
+                        <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:'thumbnail' }}" 
+                             class="thumbnail w-24 h-24 object-cover rounded-md cursor-pointer border-2 border-transparent hover:border-amber-400 transition {% if forloop.first %}active-thumb{% endif %}"
+                             onclick="switchImage('{{ image.image.url }}', this)">
+                    {% endfor %}
+                </div>
+            {% elif product.image %}
+                 <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-96 object-cover rounded-lg">
+            {% else %}
+                <div class="w-full h-96 bg-gray-700 rounded-lg flex items-center justify-center">
+                    <p class="text-gray-400">تصویری برای این محصول موجود نیست.</p>
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Product Info -->
+    <div>
+        <p class="text-amber-400 font-semibold mb-2">{{ product.category.name }}</p>
+        <h1 class="text-4xl font-extrabold text-white mb-4">{{ product.name }}</h1>
+        
+        <p class="text-gray-300 leading-relaxed mb-6">{{ product.description|linebreaks }}</p>
+
+        {% with ingredients=product.ingredients.all %}
+            {% if ingredients %}
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-white mb-2">مواد تشکیل دهنده:</h3>
+                <div class="flex flex-wrap gap-2">
+                    {% for ingredient in ingredients %}
+                        <span class="bg-gray-700 text-gray-300 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">{{ ingredient.name }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="flex items-center justify-between mb-6">
+            <p class="text-3xl font-bold text-amber-400">{{ product.price }} تومان</p>
+            <p class="text-sm font-medium {% if product.stock > 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                موجودی: {{ product.stock }} عدد
+            </p>
+        </div>
+
+        {% if product.stock > 0 %}
+        <div class="flex items-stretch gap-4">
+            <!-- Add to Cart Form -->
+            <form method="POST" action="#" class="flex-grow">
+                {% csrf_token %}
+                <div class="flex items-stretch h-full">
+                    <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="w-20 text-center bg-gray-700 border border-gray-600 rounded-r-lg focus:outline-none focus:border-amber-500">
+                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-3 px-6 rounded-l-lg transition-colors">
+                        افزودن به سبد خرید
+                    </button>
+                </div>
+            </form>
+            <!-- Add to Favorites Button -->
+            <a href="#" class="flex items-center justify-center px-4 bg-gray-700 hover:bg-gray-600 rounded-lg" title="افزودن به علاقه‌مندی‌ها">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.5l1.318-1.182a4.5 4.5 0 116.364 6.364L12 18.75l-7.682-7.682a4.5 4.5 0 010-6.364z" />
+                </svg>
+            </a>
+        </div>
+        {% else %}
+        <p class="text-center text-red-400 font-bold bg-red-500 bg-opacity-20 py-3 rounded-lg">متاسفانه این محصول تمام شده است.</p>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .active-thumb {
+        border-color: #f59e0b; /* amber-500 */
+    }
+</style>
+
+<script>
+    function switchImage(src, thumb) {
+        document.getElementById("mainImage").src = src;
+        // Remove active class from all thumbnails
+        document.querySelectorAll(".thumbnail").forEach(t => t.classList.remove("active-thumb"));
+        // Add active class to the clicked thumbnail
+        thumb.classList.add("active-thumb");
+    }
+</script>
+{% endblock %}

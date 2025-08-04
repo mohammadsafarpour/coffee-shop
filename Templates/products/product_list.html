@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}لیست محصولات{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-amber-400">محصولات ما</h1>
+    {% if user.is_staff %}
+    <a href="{% url 'product-create' %}" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-2 px-5 rounded-lg transition-all duration-300 transform hover:scale-105">
+        افزودن محصول جدید
+    </a>
+    {% endif %}
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+    {% for product in products %}
+    <a href="{% url 'product-detail' product.pk %}" class="block glass-card rounded-xl p-5 text-center transform hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-between group">
+        <div>
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover rounded-lg mb-4">
+            {% else %}
+                <div class="w-full h-48 bg-gray-700 rounded-lg mb-4 flex items-center justify-center">
+                    <p class="text-gray-400">بدون تصویر</p>
+                </div>
+            {% endif %}
+            <p class="text-sm text-amber-400 mb-1">{{ product.category.name }}</p>
+            <h3 class="text-xl font-semibold mb-2 text-white group-hover:text-amber-300 transition-colors">{{ product.name }}</h3>
+        </div>
+        <div>
+            <span class="text-lg font-bold text-amber-400">{{ product.price }} تومان</span>
+        </div>
+    </a>
+    {% empty %}
+    <div class="col-span-full text-center py-10 bg-gray-800 bg-opacity-40 rounded-lg">
+        <p class="text-gray-400 text-lg">هنوز هیچ محصولی ثبت نشده است.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+

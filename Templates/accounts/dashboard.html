@@ -3,22 +3,26 @@
 {% block title %}داشبورد کاربری{% endblock %}
 
 {% block content %}
-  <h2>سلام {{ user.phone }}!</h2>
-  <p>به داشبورد خود خوش آمدید.</p>
+<div class="glass-card rounded-2xl p-8">
+    <h2 class="text-3xl font-bold text-amber-400 mb-2">سلام {{ user.phone }}!</h2>
+    <p class="text-gray-300 mb-8">به داشبورد خود خوش آمدید.</p>
 
-  <hr>
-
-  <h3>لیست علاقه‌مندی‌های شما</h3>
-  {% if user.profile.favorites.all %}
-    <ul>
-      {% for product in user.profile.favorites.all %}
-        <li>
-          {{ product.name }}
-          <a href="{% url 'remove_from_favorites' product.id %}">(حذف)</a>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>شما هنوز هیچ محصولی را به لیست علاقه‌مندی‌های خود اضافه نکرده‌اید.</p>
-  {% endif %}
+    <div class="border-t border-gray-700 pt-6">
+        <h3 class="text-2xl font-semibold text-white mb-4">لیست علاقه‌مندی‌های شما</h3>
+        {% if user.profile.favorites.all %}
+            <ul class="space-y-4">
+                {% for product in user.profile.favorites.all %}
+                    <li class="flex justify-between items-center bg-gray-800 bg-opacity-50 p-4 rounded-lg">
+                        <span class="text-lg text-gray-200">{{ product.name }}</span>
+                        <a href="{% url 'remove_from_favorites' product.id %}" class="text-red-500 hover:text-red-400 transition-colors text-sm font-semibold">(حذف)</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="text-center py-10 bg-gray-800 bg-opacity-40 rounded-lg">
+                <p class="text-gray-400">شما هنوز هیچ محصولی را به لیست علاقه‌مندی‌های خود اضافه نکرده‌اید.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}
