@@ -1,42 +1,54 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load static %}
+{% load humanize %}  <!-- گام ۱: کتابخانه در اینجا بارگذاری می‌شود -->
+
+{% block title %}لیست سفارشات من{% endblock %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold text-amber-500 text-center mb-6">سفارش‌های من</h1>
+    <h1 class="text-3xl font-bold text-amber-400 text-center mb-8">سفارش‌های من</h1>
 
     {% if orders %}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for order in orders %}
-                <div class="bg-white rounded-xl shadow-lg p-6 text-gray-800 transition hover:shadow-2xl hover:-translate-y-1 duration-300">
-                    <h2 class="text-xl font-semibold mb-2">سفارش #{{ order.id }}</h2>
-                    <p class="text-sm text-gray-500 mb-1">تاریخ: {{ order.created_at|date:"Y-m-d H:i" }}</p>
-                    <p class="text-sm mb-3">وضعیت: 
-                        <span class="font-semibold {% if order.status == 'pe' %}text-yellow-500{% elif order.status == 'del' %}text-green-600{% else %}text-gray-600{% endif %}">
-                            {{ order.get_status_display }}
-                        </span>
-                    </p>
+                <div class="glass-card rounded-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold text-white">سفارش #{{ order.id }}</h2>
+                            <span class="text-xs font-semibold px-3 py-1 rounded-full 
+                                {% if order.status == 'pe' %}bg-yellow-500 bg-opacity-30 text-yellow-300{% elif order.status == 'del' %}bg-green-500 bg-opacity-30 text-green-300{% else %}bg-gray-500 bg-opacity-30 text-gray-300{% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-400 mb-4">تاریخ ثبت: {{ order.created_at|date:"Y/m/d - H:i" }}</p>
 
-                    <div class="border-t pt-2">
-                        <h3 class="text-base font-medium mb-2">محصولات:</h3>
-                        <ul class="text-sm space-y-1">
-                            {% for item in order.order_items.all %}
-                                <li>
-                                    {{ item.product.name }} × {{ item.quantity }} 
-                                    - <span class="text-gray-500">{{ item.price }} تومان</span>
-                                </li>
-                            {% endfor %}
-                        </ul>
+                        <div class="border-t border-gray-700 pt-4">
+                            <h3 class="text-base font-medium mb-3 text-gray-200">محصولات:</h3>
+                            <ul class="text-sm space-y-2">
+                                {% for item in order.order_items.all %}
+                                    <li class="flex justify-between items-center">
+                                        <span>{{ item.product.name }} <span class="text-gray-400">× {{ item.quantity }}</span></span>
+                                        <!-- گام ۲: قیمت این ردیف با کاما نمایش داده می‌شود -->
+                                        <!-- نکته: از item.total_price استفاده کردیم که قیمت * تعداد است -->
+                                        <span class="text-gray-300">{{ item.total_price|intcomma }} تومان</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     </div>
 
-                    <div class="mt-4 text-right font-semibold">
-                        مجموع کل: {{ order.calculate_total_price }} تومان
+                    <div class="mt-6 border-t border-amber-500 border-opacity-50 pt-4 text-left">
+                        <span class="text-gray-300">مبلغ کل:</span>
+                        <!-- گام ۳: مبلغ کل با کاما نمایش داده می‌شود -->
+                        <span class="text-xl font-bold text-amber-400">{{ order.total_price|intcomma }} تومان</span>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-center text-gray-300 mt-10">شما هنوز سفارشی ثبت نکرده‌اید.</p>
+        <div class="text-center py-16 glass-card rounded-2xl">
+            <p class="text-gray-400 text-lg">شما هنوز هیچ سفارشی ثبت نکرده‌اید.</p>
+        </div>
     {% endif %}
 </div>
 {% endblock %}

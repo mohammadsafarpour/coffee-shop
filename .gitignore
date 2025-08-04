@@ -57,3 +57,6 @@ Desktop.ini
 Desktop.ini
 
 >>>>>>> master
+review/migrations/__init__.py
+notification/migrations/__init__.py
+.gitignore
