@@ -1,13 +1,15 @@
-from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth.decorators import login_required
+# review/views.py
 
-from products.models import Product
-from .forms import ReviewForm
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Review
+from .forms import ReviewForm
+from products.models import Product
+from django.contrib.auth.decorators import login_required
 
 @login_required
 def add_review(request, product_id):
     product = get_object_or_404(Product, id=product_id)
+    
     if request.method == 'POST':
         form = ReviewForm(request.POST)
         if form.is_valid():
@@ -15,7 +17,12 @@ def add_review(request, product_id):
             review.product = product
             review.user = request.user
             review.save()
-            return redirect('product_detail', slug=product.slug)
+            return redirect('product-detail', pk=product.id)
     else:
         form = ReviewForm()
+    
     return render(request, 'review/add_review.html', {'form': form, 'product': product})
+
+def review_index(request):
+    reviews = Review.objects.all()
+    return render(request, 'review/index.html', {'reviews': reviews})
