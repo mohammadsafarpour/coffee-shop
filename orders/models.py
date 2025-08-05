@@ -21,8 +21,6 @@ class Order(models.Model):
         ordering = ['-created_at']
         indexes = [
             models.Index(fields=['-created_at']),
-            # models.Index(fields=['status']),
-            # models.Index(fields=['customer']),
         ]
         
     def __str__(self):
