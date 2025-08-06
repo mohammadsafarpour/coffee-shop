@@ -9,6 +9,7 @@
     <!-- Sidebar Menu -->
     <div class="md:col-span-1">
         <div class="glass-card rounded-2xl p-6 text-center">
+            <!-- Profile Picture -->
             <img src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" 
                  alt="تصویر پروفایل" 
                  class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-amber-400 object-cover">
@@ -20,6 +21,7 @@
                 ویرایش پروفایل
             </a>
 
+            <!-- Navigation Menu -->
             <nav class="space-y-2 text-right">
                 <a href="{% url 'dashboard' %}" class="flex items-center p-3 rounded-lg text-gray-200 hover:bg-gray-700 transition-colors">
                     <svg class="h-5 w-5 ml-3 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.5l1.318-1.182a4.5 4.5 0 116.364 6.364L12 18.75l-7.682-7.682a4.5 4.5 0 010-6.364z" /></svg>
