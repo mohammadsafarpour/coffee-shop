@@ -38,8 +38,7 @@
             <div class="border-t border-amber-500 border-opacity-50 mt-6 pt-6 text-left">
                 <span class="text-xl text-gray-300">مبلغ کل:</span>
                 <span class="text-3xl font-bold text-amber-400">{{ total_price|intcomma }} تومان</span>
-                <a href="#" class="mt-4 block text-center w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition-all">ادامه فرآیند خرید</a>
-            </div>
+                <a href="{% url 'orders:payment_request' %}" class="mt-4 block text-center w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition-all">ادامه فرآیند خرید</a>            </div>
         </div>
     {% else %}
         <div class="text-center py-16 glass-card rounded-2xl">
