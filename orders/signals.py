@@ -13,11 +13,14 @@ User = get_user_model()
 
 @receiver(post_save, sender=Order)
 def notify_admin_on_new_order(sender, instance, created, **kwargs):
+
     if created:
         admins = User.objects.filter(is_superuser=True)
+        
+        notification_message = f"سفارش جدید #{instance.id} توسط کاربر {instance.customer.phone} ثبت شد."
+        
         for admin in admins:
             Notification.objects.create(
-                recipient=admin,
-                title="سفارش جدید ثبت شد",
-                message=f"سفارشی توسط {instance.customer} با شناسه {instance.id} ثبت شده است."
+                user=admin,                 
+                message=notification_message 
             )

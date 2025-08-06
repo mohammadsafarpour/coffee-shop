@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}سبد خرید شما{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-amber-400 text-center mb-8">سبد خرید شما</h1>
+
+    {% if cart_items %}
+        <div class="glass-card rounded-2xl p-6">
+            <ul class="divide-y divide-gray-700">
+                {% for item in cart_items %}
+                <li class="py-4 flex flex-col sm:flex-row items-center justify-between">
+                    <div class="flex items-center mb-4 sm:mb-0">
+                        {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-20 h-20 object-cover rounded-lg ml-6">
+                        {% endif %}
+                        <div>
+                            <p class="text-lg font-semibold text-white">{{ item.product.name }}</p>
+                            <p class="text-sm text-gray-400">{{ item.product.price|intcomma }} تومان</p>
+                            <a href="{% url 'orders:remove_from_cart' item.product.id %}" class="text-red-500 hover:text-red-400 text-xs font-semibold mt-1">حذف</a>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center border border-gray-600 rounded-lg">
+                            <a href="{% url 'orders:increase_quantity' item.product.id %}" class="px-3 py-1 text-lg text-amber-400 hover:bg-gray-700">+</a>
+                            <span class="px-4 py-1 text-white">{{ item.quantity }}</span>
+                            <a href="{% url 'orders:decrease_quantity' item.product.id %}" class="px-3 py-1 text-lg text-amber-400 hover:bg-gray-700">-</a>
+                        </div>
+                        <p class="text-lg font-bold text-gray-200 w-32 text-left">{{ item.total_price|intcomma }} تومان</p>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            
+            <div class="border-t border-amber-500 border-opacity-50 mt-6 pt-6 text-left">
+                <span class="text-xl text-gray-300">مبلغ کل:</span>
+                <span class="text-3xl font-bold text-amber-400">{{ total_price|intcomma }} تومان</span>
+                <a href="#" class="mt-4 block text-center w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition-all">ادامه فرآیند خرید</a>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center py-16 glass-card rounded-2xl">
+            <p class="text-gray-400 text-lg">سبد خرید شما خالی است.</p>
+            <a href="{% url 'product-list' %}" class="mt-4 inline-block bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-2 px-5 rounded-lg transition-all">مشاهده محصولات</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
