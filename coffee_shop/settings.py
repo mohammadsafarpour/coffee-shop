@@ -152,3 +152,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
+SANDBOX = True 
+MERCHANT_ID = 'a0000000-0000-0000-0000-000000000000'

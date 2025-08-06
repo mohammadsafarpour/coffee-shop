@@ -21,6 +21,6 @@ def notify_admin_on_new_order(sender, instance, created, **kwargs):
         
         for admin in admins:
             Notification.objects.create(
-                user=admin,                 
-                message=notification_message 
+                user=admin,
+                message=notification_message
             )
