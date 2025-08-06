@@ -24,3 +24,10 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = 'products/product_detail.html'
     context_object_name = 'product'
+
+class ToggleFavoriteView(Product):
+    # def post(self, request, pk):
+    #     product = get_object_or_404(Product, pk=pk)
+    #     # Logic to toggle favorite status
+    #     return redirect('product-detail', pk=pk)
+    pass

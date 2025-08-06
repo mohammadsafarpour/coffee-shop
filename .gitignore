@@ -2,8 +2,11 @@
 
 ### Python ###
 __pycache__/
+.python
 *.py[cod]
+*.pyc
 *.pyo
+*.pyd
 *.so
 *.egg-info/
 .python-version
@@ -51,12 +54,8 @@ db.sqlite3
 ### Windows ###
 Thumbs.db
 ehthumbs.db
-<<<<<<< HEAD
-Desktop.ini
-=======
 Desktop.ini
 
->>>>>>> master
 review/migrations/__init__.py
 notification/migrations/__init__.py
-.gitignore
+

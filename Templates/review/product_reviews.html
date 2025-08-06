@@ -1,14 +1,57 @@
 {% extends "base.html" %}
-{% block title %}ثبت نظر{% endblock %}
+{% load static %}
+
+{% block title %}نظرات محصول: {{ product.name }}{% endblock %}
 
 {% block content %}
-<h2 class="text-2xl font-bold text-amber-400 mb-6">ثبت نظر برای {{ product.title }}</h2>
+<div class="max-w-4xl mx-auto">
+    <div class="glass-card p-8 rounded-2xl">
+        <div class="flex items-center gap-4 mb-8">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-20 h-20 object-cover rounded-lg">
+            {% endif %}
+            <div>
+                <p class="text-sm text-gray-400">نظرات برای محصول:</p>
+                <h2 class="text-3xl font-bold text-amber-400">{{ product.name }}</h2>
+            </div>
+        </div>
 
-<form method="post" class="space-y-4">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-black font-bold py-2 px-4 rounded">
-        ثبت نظر
-    </button>
-</form>
+        <!-- فرم افزودن نظر -->
+        {% if user.is_authenticated %}
+            <form action="{% url 'add_review' product.id %}" method="post" class="mb-10 bg-gray-800 bg-opacity-40 p-6 rounded-lg">
+                {% csrf_token %}
+                <h3 class="text-xl font-semibold text-white mb-4">نظر خود را ثبت کنید</h3>
+                {{ form.as_p }}
+                <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-2 px-6 rounded-lg transition">ارسال نظر</button>
+            </form>
+        {% else %}
+            <p class="mb-10 text-gray-400 text-center bg-gray-800 bg-opacity-40 p-6 rounded-lg">
+                برای ثبت نظر لطفاً <a href="{% url 'login' %}" class="text-amber-400 underline">وارد شوید</a>.
+            </p>
+        {% endif %}
+
+        <!-- لیست نظرات -->
+        <div>
+            <h3 class="text-2xl font-semibold text-white mb-4">نظرات کاربران ({{ reviews.count }})</h3>
+            {% if reviews %}
+                <ul class="space-y-6">
+                    {% for review in reviews %}
+                        <li class="bg-gray-800 bg-opacity-40 p-5 rounded-lg">
+                            <div class="flex items-center mb-3">
+                                <img src="{% if review.user.profile.avatar %}{{ review.user.profile.avatar.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" alt="avatar" class="w-10 h-10 rounded-full ml-4 object-cover">
+                                <div>
+                                    <span class="font-bold text-amber-400">{{ review.user.profile.first_name|default:review.user.phone }}</span>
+                                    <p class="text-xs text-gray-400">{{ review.created_at|date:"Y/m/d - H:i" }}</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-200 leading-relaxed">{{ review.text|linebreaks }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-400 text-center py-8">هنوز هیچ نظری برای این محصول ثبت نشده است. اولین نفر باشید!</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}
