@@ -1,5 +1,5 @@
 from .models import Profile
-from pyexpat.errors import messages
+from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy, reverse
 from django.views import generic
@@ -45,15 +45,6 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
     template_name = "accounts/dashboard.html"
 
 
-# class ProfileEditView(LoginRequiredMixin, generic.UpdateView):
-
-#     model = Profile
-#     form_class = ProfileUpdateForm(instance=request.user.profile)
-#     fields = ('first_name','last_name', 'avatar', 'favorites')
-#     template_name = 'accounts/profile_edit.html'
-
-#     def get_object(self, queryset=None):
-#         return self.request.user.profile
 
 
 class ProfileEditView(LoginRequiredMixin, generic.UpdateView):
@@ -78,6 +69,19 @@ class ProfileEditView(LoginRequiredMixin, generic.UpdateView):
 
         context = {"user_form": user_form, "profile_form": profile_form}
         return render(request, "accounts/profile_edit.html", context)
+
+
+
+# class ProfileEditView(LoginRequiredMixin, generic.UpdateView):
+
+#     model = Profile
+#     form_class = ProfileUpdateForm(instance=request.user.profile)
+#     fields = ('first_name','last_name', 'avatar', 'favorites')
+#     template_name = 'accounts/profile_edit.html'
+
+#     def get_object(self, queryset=None):
+#         return self.request.user.profile
+
 
 
 # class AddToFavoritesView(LoginRequiredMixin, generic.View):
