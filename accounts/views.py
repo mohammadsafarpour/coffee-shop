@@ -1,37 +1,37 @@
+from .models import Profile
+from pyexpat.errors import messages
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy, reverse
 from django.views import generic
+
 # from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
+
 # from django.http import HttpResponseRedirect
 from django.core.mail import send_mail
 from django.conf import settings
-
-from .forms import CustomUserCreationForm
-# from products.models import Product
+from .forms import CustomUserCreationForm, CustomUserChangeForm, ProfileUpdateForm
 
 
 # تابع شبیه‌سازی شده برای ارسال پیامک
 def send_welcome_sms(phone_number):
-
     print(f" شبیه‌سازی ارسال پیامک به شماره {phone_number} ")
     print(" پیام: به کافه ما خوش آمدید ")
 
 
 class SignUpView(generic.CreateView):
-
     form_class = CustomUserCreationForm
-    success_url = reverse_lazy('login')
-    template_name = 'accounts/signup.html'
+    success_url = reverse_lazy("login")
+    template_name = "accounts/signup.html"
 
     def form_valid(self, form):
-
         response = super().form_valid(form)
         user = self.object
 
         send_mail(
-            subject='به کافه ما خوش آمدید',
-            message=f'سلام، از ثبت‌نام شما در وب‌سایت ما سپاسگزاریم.',
-            from_email=getattr(settings, 'EMAIL_HOST_USER', 'noreply@example.com'),
+            subject="به کافه ما خوش آمدید",
+            message=f"سلام، از ثبت‌نام شما در وب‌سایت ما سپاسگزاریم.",
+            from_email=getattr(settings, "EMAIL_HOST_USER", "noreply@example.com"),
             recipient_list=[user.email],
             fail_silently=False,
         )
@@ -42,22 +42,56 @@ class SignUpView(generic.CreateView):
 
 
 class DashboardView(LoginRequiredMixin, generic.TemplateView):
+    template_name = "accounts/dashboard.html"
 
-    template_name = 'accounts/dashboard.html'
+
+# class ProfileEditView(LoginRequiredMixin, generic.UpdateView):
+
+#     model = Profile
+#     form_class = ProfileUpdateForm(instance=request.user.profile)
+#     fields = ('first_name','last_name', 'avatar', 'favorites')
+#     template_name = 'accounts/profile_edit.html'
+
+#     def get_object(self, queryset=None):
+#         return self.request.user.profile
+
+
+class ProfileEditView(LoginRequiredMixin, generic.UpdateView):
+    
+    def get(self, request, *args, **kwargs):
+        user_form = CustomUserChangeForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=request.user.profile)
+        context = {"user_form": user_form, "profile_form": profile_form}
+        return render(request, "accounts/profile_edit.html", context)
+
+    def post(self, request, *args, **kwargs):
+        user_form = CustomUserChangeForm(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(
+            request.POST, request.FILES, instance=request.user.profile
+        )
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, "پروفایل شما با موفقیت به‌روزرسانی شد.")
+            return redirect("dashboard")
+
+        context = {"user_form": user_form, "profile_form": profile_form}
+        return render(request, "accounts/profile_edit.html", context)
 
 
 # class AddToFavoritesView(LoginRequiredMixin, generic.View):
 
 #     def get(self, request, *args, **kwargs):
 #         product = get_object_or_404(Product, pk=self.kwargs['product_id'])
-    
+
 #         request.user.profile.favorites.add(product)
 #         کاربر را به صفحه‌ای که از آن آمده بازمی‌گردانیم
 #         return HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('dashboard')))
 
 
 # class RemoveFromFavoritesView(LoginRequiredMixin, generic.View):
-   
+
 
 #     def get(self, request, *args, **kwargs):
 #         product = get_object_or_404(Product, pk=self.kwargs['product_id'])
@@ -66,9 +100,9 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
 
 
 # class SignUpView(generic.CreateView):
-  
+
 #     form_class = CustomUserCreationForm
-#     success_url = reverse_lazy('login') 
+#     success_url = reverse_lazy('login')
 #     template_name = 'signup.html'
 
 # def user_login(request):

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}اطلاعیه‌ها{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl font-bold text-amber-400 text-center mb-8">صندوق ورودی شما</h1>
+
+    <div class="glass-card rounded-2xl p-6">
+        {% if notifications %}
+            <ul class="space-y-4">
+                {% for note in notifications %}
+                    <li class="p-4 rounded-lg transition-colors {% if not note.is_read %}bg-amber-500 bg-opacity-10 border-r-4 border-amber-500{% else %}bg-gray-800 bg-opacity-40{% endif %}">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-grow">
+                                <h3 class="text-lg font-semibold text-white">{{ note.title }}</h3>
+                                <p class="text-gray-300 text-sm mt-1">{{ note.message }}</p>
+                            </div>
+                            {% if not note.is_read %}
+                                <form action="{% url 'mark_notification_as_read' note.id %}" method="post" class="mr-4">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-xs text-cyan-400 hover:underline" title="خوانده شد">خوانده شد</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                        <p class="text-gray-500 text-xs mt-3 text-left">{{ note.created_at|date:"Y/m/d - H:i" }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="text-center py-16">
+                <p class="text-gray-400 text-lg">شما هیچ اطلاعیه‌ای ندارید.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
