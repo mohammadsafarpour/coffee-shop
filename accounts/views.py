@@ -57,7 +57,7 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
 
 
 class ProfileEditView(LoginRequiredMixin, generic.UpdateView):
-    
+
     def get(self, request, *args, **kwargs):
         user_form = CustomUserChangeForm(instance=request.user)
         profile_form = ProfileUpdateForm(instance=request.user.profile)

@@ -51,7 +51,6 @@ class Profile(models.Model):
     first_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
     avatar = models.ImageField(upload_to="profiles/avatars/", null=True, blank=True)
-
     favorites = models.ManyToManyField("products.Product", blank=True, verbose_name="علاقه‌مندی‌ها")
 
     # def __str__(self):
