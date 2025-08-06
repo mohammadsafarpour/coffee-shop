@@ -6,7 +6,6 @@
 
 {% block content %}
 <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-    <!-- Image Gallery -->
     <div class="glass-card rounded-2xl p-6">
         {% with images=product.images.all %}
             {% if images %}
@@ -27,8 +26,6 @@
             {% endif %}
         {% endwith %}
     </div>
-
-    <!-- Product Info -->
     <div>
         <p class="text-amber-400 font-semibold mb-2">{{ product.category.name }}</p>
         <h1 class="text-4xl font-extrabold text-white mb-4">{{ product.name }}</h1>
@@ -44,30 +41,20 @@
 
         {% if product.stock > 0 %}
         <div class="flex items-stretch gap-4">
-            <!-- Add to Cart Form -->
-            <form method="POST" action="#" class="flex-grow">
-                {% csrf_token %}
-                <div class="flex items-stretch h-full">
-                    <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="w-20 text-center bg-gray-700 border border-gray-600 rounded-r-lg focus:outline-none focus:border-amber-500">
-                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-3 px-6 rounded-l-lg transition-colors">
-                        افزودن به سبد خرید
-                    </button>
-                </div>
-            </form>
-            <!-- Add to Favorites Button -->
+            <div class="flex-grow flex items-stretch h-full">
+                <input id="quantity-input" type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="w-20 text-center bg-gray-700 border border-gray-600 rounded-r-lg focus:outline-none focus:border-amber-500">
+                <button onclick="addToCart()" class="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-3 px-6 rounded-l-lg transition-colors">
+                    افزودن به سبد خرید
+                </button>
+            </div>
+
             <form method="POST" action="{% url 'toggle-favorite' product.id %}">
                 {% csrf_token %}
                 <button type="submit" class="flex items-center justify-center h-full px-4 bg-gray-700 hover:bg-gray-600 rounded-lg" title="افزودن/حذف از علاقه‌مندی‌ها">
                     {% if is_favorite %}
-                        <!-- Filled Heart -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
-                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>
                     {% else %}
-                        <!-- Outlined Heart -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.5l1.318-1.182a4.5 4.5 0 116.364 6.364L12 18.75l-7.682-7.682a4.5 4.5 0 010-6.364z" />
-                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.5l1.318-1.182a4.5 4.5 0 116.364 6.364L12 18.75l-7.682-7.682a4.5 4.5 0 010-6.364z" /></svg>
                     {% endif %}
                 </button>
             </form>
@@ -87,6 +74,11 @@
         document.getElementById("mainImage").src = src;
         document.querySelectorAll(".thumbnail").forEach(t => t.classList.remove("active-thumb"));
         thumb.classList.add("active-thumb");
+    }
+
+    function addToCart() {
+        const quantity = document.getElementById('quantity-input').value;
+        window.location.href = `{% url 'orders:add_to_cart' product.id %}?quantity=${quantity}`;
     }
 </script>
 {% endblock %}
