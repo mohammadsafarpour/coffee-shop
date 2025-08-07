@@ -19,7 +19,7 @@ class CustomUserChangeForm(UserChangeForm):
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['first_name', 'last_name', 'avatar', 'favorites']
+        fields = ['first_name', 'last_name', 'avatar']
 
 
 # class SignUpForm(UserCreationForm):
