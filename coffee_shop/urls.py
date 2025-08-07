@@ -32,8 +32,6 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/', include('accounts.urls')),
     path('orders/', include('orders.urls')),
-    # path('',TemplateView.as_view(template_name='login.html'), name='login'),
-    #path('accounts/', include(accounts.urls)),
     path('orders/', include('orders.urls'), name='orders'),
     path('products/', include('products.urls'), name='products'),
     path('create/', ProductCreateView.as_view(), name='product-create'),

@@ -53,4 +53,4 @@ class Favorite(models.Model):
         unique_together = ('user', 'product')
 
     def __str__(self):
-        return f"{self.user.username} - {self.product.name}"
+        return f"{self.user.first_name} - {self.product.name}"
