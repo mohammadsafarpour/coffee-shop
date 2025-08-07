@@ -6,6 +6,7 @@
 
 {% block content %}
 <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+    <!-- Image Gallery -->
     <div class="glass-card rounded-2xl p-6">
         {% with images=product.images.all %}
             {% if images %}
@@ -26,9 +27,23 @@
             {% endif %}
         {% endwith %}
     </div>
+
+    <!-- Product Info -->
     <div>
         <p class="text-amber-400 font-semibold mb-2">{{ product.category.name }}</p>
-        <h1 class="text-4xl font-extrabold text-white mb-4">{{ product.name }}</h1>
+        <h1 class="text-4xl font-extrabold text-white mb-3 font-lalezar tracking-wide">{{ product.name }}</h1>
+
+        <!-- Average Rating -->
+        {% if average_rating %}
+        <div class="flex items-center gap-2 mb-4">
+            <div class="flex items-center">
+                {% for i in "12345" %}
+                    <svg class="w-5 h-5 {% if forloop.counter <= average_rating %}text-yellow-400{% else %}text-gray-600{% endif %}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                {% endfor %}
+            </div>
+            <a href="#reviews-section" class="text-sm text-gray-400 hover:text-amber-400">({{ reviews_count }} نظر)</a>
+        </div>
+        {% endif %}
         
         <p class="text-gray-300 leading-relaxed mb-6">{{ product.description|linebreaks }}</p>
 
@@ -40,27 +55,71 @@
         </div>
 
         {% if product.stock > 0 %}
-        <div class="flex items-stretch gap-4">
-            <div class="flex-grow flex items-stretch h-full">
-                <input id="quantity-input" type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="w-20 text-center bg-gray-700 border border-gray-600 rounded-r-lg focus:outline-none focus:border-amber-500">
-                <button onclick="addToCart()" class="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-3 px-6 rounded-l-lg transition-colors">
-                    افزودن به سبد خرید
-                </button>
+        <form method="POST" action="{% url 'orders:add_to_cart' product.id %}">
+            {% csrf_token %}
+            <div class="flex items-stretch gap-4">
+                <div class="flex-grow flex items-stretch h-full">
+                    <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="w-20 text-center bg-gray-700 border border-gray-600 rounded-r-lg focus:outline-none focus:border-amber-500">
+                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-3 px-6 rounded-l-lg transition-colors">
+                        افزودن به سبد خرید
+                    </button>
+                </div>
             </div>
-
-            <form method="POST" action="{% url 'toggle-favorite' product.id %}">
-                {% csrf_token %}
-                <button type="submit" class="flex items-center justify-center h-full px-4 bg-gray-700 hover:bg-gray-600 rounded-lg" title="افزودن/حذف از علاقه‌مندی‌ها">
-                    {% if is_favorite %}
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>
-                    {% else %}
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.5l1.318-1.182a4.5 4.5 0 116.364 6.364L12 18.75l-7.682-7.682a4.5 4.5 0 010-6.364z" /></svg>
-                    {% endif %}
-                </button>
-            </form>
-        </div>
+        </form>
         {% else %}
         <p class="text-center text-red-400 font-bold bg-red-500 bg-opacity-20 py-3 rounded-lg">متاسفانه این محصول تمام شده است.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Reviews Section -->
+<div id="reviews-section" class="mt-16">
+    <div class="glass-card p-8 rounded-2xl">
+        <h3 class="text-3xl font-semibold text-white mb-8 font-lalezar">نظرات کاربران</h3>
+        
+        <!-- Add Review Form -->
+        {% if user.is_authenticated %}
+            <form action="{% url 'add_review' product.id %}" method="post" class="mb-10 bg-gray-800 bg-opacity-40 p-6 rounded-lg">
+                {% csrf_token %}
+                <h4 class="text-xl font-semibold text-white mb-4">نظر خود را ثبت کنید</h4>
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-300 mb-2">امتیاز شما:</label>
+                    <div id="star-rating" class="flex flex-row-reverse justify-end items-center">
+                        {% for i in "54321" %}<svg class="star w-8 h-8 cursor-pointer text-gray-500 hover:text-amber-400 transition-colors" data-value="{{ i }}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>{% endfor %}
+                    </div>
+                </div>
+                {{ review_form.text.label_tag }}
+                {{ review_form.text }}
+                {{ review_form.rating }} <!-- Hidden input -->
+                <button type="submit" class="mt-4 bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-2 px-6 rounded-lg transition">ارسال نظر</button>
+            </form>
+        {% else %}
+            <p class="mb-10 text-gray-400 text-center bg-gray-800 bg-opacity-40 p-6 rounded-lg">برای ثبت نظر لطفاً <a href="{% url 'login' %}" class="text-amber-400 underline">وارد شوید</a>.</p>
+        {% endif %}
+
+        <!-- Reviews List -->
+        {% if reviews %}
+            <ul class="space-y-6">
+                {% for review in reviews %}
+                    <li class="bg-gray-800 bg-opacity-40 p-5 rounded-lg">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center mb-3">
+                                <img src="{% if review.user.profile.avatar and review.user.profile.avatar.url %}{{ review.user.profile.avatar.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" alt="avatar" class="w-10 h-10 rounded-full ml-4 object-cover">
+                                <div>
+                                    <span class="font-bold text-amber-400">{{ review.user.profile.first_name|default:review.user.phone }}</span>
+                                    <p class="text-xs text-gray-400">{{ review.created_at|date:"Y/m/d" }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                {% for i in "12345" %}<svg class="w-4 h-4 {% if forloop.counter <= review.rating %}text-yellow-400{% else %}text-gray-600{% endif %}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>{% endfor %}
+                            </div>
+                        </div>
+                        <p class="text-gray-200 leading-relaxed">{{ review.text|linebreaks }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-gray-400 text-center py-8">هنوز نظری برای این محصول ثبت نشده است. شما اولین نفر باشید!</p>
         {% endif %}
     </div>
 </div>
@@ -76,9 +135,26 @@
         thumb.classList.add("active-thumb");
     }
 
-    function addToCart() {
-        const quantity = document.getElementById('quantity-input').value;
-        window.location.href = `{% url 'orders:add_to_cart' product.id %}?quantity=${quantity}`;
-    }
+    document.addEventListener('DOMContentLoaded', function () {
+        const stars = document.querySelectorAll('#star-rating .star');
+        const ratingInput = document.querySelector('input[name="rating"]');
+        
+        stars.forEach(star => {
+            star.addEventListener('click', function () {
+                const value = this.dataset.value;
+                ratingInput.value = value;
+                
+                stars.forEach(s => {
+                    if (s.dataset.value <= value) {
+                        s.classList.remove('text-gray-500');
+                        s.classList.add('text-amber-400');
+                    } else {
+                        s.classList.remove('text-amber-400');
+                        s.classList.add('text-gray-500');
+                    }
+                });
+            });
+        });
+    });
 </script>
 {% endblock %}
