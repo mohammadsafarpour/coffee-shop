@@ -6,7 +6,7 @@
 {% block content %}
 <div class="flex justify-center items-center py-10">
     <div class="w-full max-w-2xl glass-card rounded-2xl p-8">
-        <h2 class="text-3xl font-bold text-center text-amber-400 mb-8">ویرایش پروفایل</h2>
+        <h2 class="text-3xl font-bold text-center text-amber-400 mb-8 font-lalezar">ویرایش پروفایل</h2>
         
         <form method="post" enctype="multipart/form-data" class="space-y-6">
             {% csrf_token %}
@@ -14,7 +14,7 @@
             <!-- Custom styling for file input -->
             <style>
                 input[type="file"]#id_avatar {
-                    background-color: rgba(255, 255, 255, 0.1);
+                    background-color: rgba(10, 10, 10, 0.5);
                     border: 1px dashed rgba(255, 255, 255, 0.3);
                     padding: 1rem;
                     cursor: pointer;
@@ -53,7 +53,7 @@
                     {{ profile_form.last_name }}
                 </div>
                 
-                <!-- Phone (Read-only) -->
+                <!-- Phone (Read-only example, assuming it's not editable here) -->
                 <div>
                     <label for="{{ user_form.phone.id_for_label }}">{{ user_form.phone.label }}</label>
                     {{ user_form.phone }}
@@ -68,15 +68,10 @@
                 <!-- Avatar -->
                 <div class="sm:col-span-2">
                     <label for="{{ profile_form.avatar.id_for_label }}">{{ profile_form.avatar.label }}</label>
-                    {% if user.profile.avatar %}
+                    {% if user.profile.avatar and user.profile.avatar.url %}
                         <p class="text-sm text-gray-400 mb-2">تصویر فعلی: <a href="{{ user.profile.avatar.url }}" class="text-amber-400" target="_blank">{{ user.profile.avatar.name|truncatechars:30 }}</a></p>
                     {% endif %}
                     {{ profile_form.avatar }}
-                </div>
-
-                <!-- Favorites (Hidden or Disabled) -->
-                <div class="hidden">
-                    {{ profile_form.favorites }}
                 </div>
             </div>
             
