@@ -28,7 +28,7 @@ def send_welcome_sms(phone_number):
     except HTTPException as e:
         print(e)
     
-    
+
     # print(f" شبیه‌سازی ارسال پیامک به شماره {phone_number} ")
     # print(" پیام: به کافه ما خوش آمدید ")
 
@@ -58,6 +58,12 @@ class SignUpView(generic.CreateView):
 class DashboardView(LoginRequiredMixin, generic.TemplateView):
     template_name = "accounts/dashboard.html"
 
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context["profile"] = self.request.user.profile
+    #     return context
+    
+
 
 class ProfileEditView(LoginRequiredMixin, generic.UpdateView):
 
@@ -82,6 +88,8 @@ class ProfileEditView(LoginRequiredMixin, generic.UpdateView):
         context = {"user_form": user_form, "profile_form": profile_form}
         return render(request, "accounts/profile_edit.html", context)
 
+    def get_success_url(self):
+        return reverse("dashboard")
 
 
 # class ProfileEditView(LoginRequiredMixin, generic.UpdateView):
