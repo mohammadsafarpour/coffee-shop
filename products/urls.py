@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ProductListView, ProductCreateView
+from .views import ProductListView, ProductCreateView, toggle_favorite
 
 from . import views
 

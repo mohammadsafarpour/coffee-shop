@@ -5,7 +5,5 @@ urlpatterns = [
     path('signup/', SignUpView.as_view(), name='signup'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path('profile/edit/', ProfileEditView.as_view(), name='profile-edit'),
-    # path('login/', auth_views.LoginView.as_view(template_name='accounts/login.html'),
-    #     name='login'),
 
 ]

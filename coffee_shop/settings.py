@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "review.apps.ReviewConfig",
     "notification.apps.NotificationConfig",
     'django_extensions',
+    # "kavenegar",
 ]
 
 MIDDLEWARE = [
@@ -133,18 +134,19 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.CustomUser"
-
 LOGIN_REDIRECT_URL = "dashboard"
 LOGIN_URL = "login"
 LOGOUT_URL = "logout"
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_PASSWORD = "your-password"
-EMAIL_HOST_USER = "U0F6D@example.com"
+EMAIL_HOST_USER = "m.yousefi.r79@gmail.com"
+EMAIL_HOST_PASSWORD = "wfvrrxkrsmqkfgku"
 DEFAULT_FROM_EMAIL = "U0F6D@example.com"
+EMAIL_USE_TLS = True
+
+KAVENEGAR_API_KEY = '316E6E44372F773869374333634231505146654A75527A72444E55384E5245696D5A556A534E64657A68733D'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

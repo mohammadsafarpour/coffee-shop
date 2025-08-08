@@ -3,20 +3,34 @@ from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy, reverse
 from django.views import generic
-
 # from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-
 # from django.http import HttpResponseRedirect
 from django.core.mail import send_mail
 from django.conf import settings
 from .forms import CustomUserCreationForm, CustomUserChangeForm, ProfileUpdateForm
+from kavenegar import KavenegarAPI, APIException, HTTPException
 
 
 # تابع شبیه‌سازی شده برای ارسال پیامک
 def send_welcome_sms(phone_number):
-    print(f" شبیه‌سازی ارسال پیامک به شماره {phone_number} ")
-    print(" پیام: به کافه ما خوش آمدید ")
+    api = KavenegarAPI(settings.KAVENEGAR_API_KEY)
+    try:
+        params = {
+        'sender': '2000660110',
+        'receptor' : phone_number,
+        'message' : "سلام به کافه ما خوش آمدید"
+        }
+        response = api.sms_send(params)
+
+    except APIException as e:
+        print(e)
+    except HTTPException as e:
+        print(e)
+    
+
+    # print(f" شبیه‌سازی ارسال پیامک به شماره {phone_number} ")
+    # print(" پیام: به کافه ما خوش آمدید ")
 
 
 class SignUpView(generic.CreateView):
@@ -30,7 +44,7 @@ class SignUpView(generic.CreateView):
 
         send_mail(
             subject="به کافه ما خوش آمدید",
-            message=f"سلام، از ثبت‌نام شما در وب‌سایت ما سپاسگزاریم.",
+            message=f"سلام، از ثبت‌نام شما در وب‌سایت تمیزکافه سپاسگزاریم.",
             from_email=getattr(settings, "EMAIL_HOST_USER", "noreply@example.com"),
             recipient_list=[user.email],
             fail_silently=False,
@@ -44,7 +58,11 @@ class SignUpView(generic.CreateView):
 class DashboardView(LoginRequiredMixin, generic.TemplateView):
     template_name = "accounts/dashboard.html"
 
-
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context["profile"] = self.request.user.profile
+    #     return context
+    
 
 
 class ProfileEditView(LoginRequiredMixin, generic.UpdateView):
@@ -70,6 +88,8 @@ class ProfileEditView(LoginRequiredMixin, generic.UpdateView):
         context = {"user_form": user_form, "profile_form": profile_form}
         return render(request, "accounts/profile_edit.html", context)
 
+    def get_success_url(self):
+        return reverse("dashboard")
 
 
 # class ProfileEditView(LoginRequiredMixin, generic.UpdateView):

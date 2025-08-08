@@ -39,7 +39,7 @@ class CustomUser(AbstractUser):
     USERNAME_FIELD = 'phone'
     REQUIRED_FIELDS = ['email']
     phone = models.CharField(max_length=11, unique=True)
-    photo = models.ImageField(upload_to="avatars/", null=True, blank=True)    
+    # photo = models.ImageField(upload_to="avatars/", null=True, blank=True)  
     objects = CustomUserManager()
 
     def __str__(self):
@@ -52,6 +52,13 @@ class Profile(models.Model):
     last_name = models.CharField(max_length=100, blank=True, null=True)
     avatar = models.ImageField(upload_to="profiles/avatars/", null=True, blank=True)
     favorites = models.ManyToManyField("products.Product", blank=True, verbose_name="علاقه‌مندی‌ها")
+
+    class Meta:
+        # verbose_name = 'پروفایل'
+        # verbose_name_plural = 'پروفایل‌ها'
+        ordering = ['user']
+        # unique_together = ('user', 'first_name', 'last_name')
+
 
     # def __str__(self):
     #     return f"پروفایل {self.user.first_name} { self.user.last_name}"
@@ -67,6 +74,7 @@ def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
 
+    instance.profile.save()
 
 post_save.connect(create_user_profile, sender=CustomUser)
 
