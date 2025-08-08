@@ -16,7 +16,7 @@ def product_reviews(request, product_id):
         'reviews': reviews,
         'form': form,
     }
-    return render(request, 'reviews/product_reviews.html', context)
+    return render(request, 'review/product_reviews.html', context)
 
 @login_required
 def add_review(request, product_id):
