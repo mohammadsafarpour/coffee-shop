@@ -16,13 +16,12 @@ Including another URLconf
 """
 from django.urls import path, include
 from django.conf.urls.static import static
-
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView
 from products.views import ProductListView, ProductCreateView
-
 from django.conf import settings
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,7 +30,6 @@ urlpatterns = [
     path('accounts/logout/',auth_views.LoginView.as_view(template_name='accounts/logout.html'),name='logout'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/', include('accounts.urls')),
-    path('orders/', include('orders.urls')),
     path('orders/', include('orders.urls'), name='orders'),
     path('products/', include('products.urls'), name='products'),
     path('create/', ProductCreateView.as_view(), name='product-create'),
