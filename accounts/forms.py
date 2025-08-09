@@ -5,19 +5,24 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import CustomUser, Profile
 
 class CustomUserCreationForm(UserCreationForm):
-    
+
+    first_name = forms.CharField(label='نام', max_length=30, required=False)
+    last_name = forms.CharField(label='نام خانوادگی', max_length=30, required=False)
+
     class Meta(UserCreationForm.Meta):
         model = CustomUser
-        fields = ['first_name', 'last_name','email', 'phone', 'password1', 'password2']
+        fields = ['email', 'phone']
         help_texts = {
-            'email': 'A valid email address, please.',
+            'email': 'لطفا یک آدرس ایمیل معتبر وارد کنید.',
         }
 
     def save(self, commit=True):
-        user = super().save(commit=False)
-        user.email = self.cleaned_data['email']
+        user = super().save(commit=True)
+        profile = user.profile
+        profile.first_name = self.cleaned_data['first_name']
+        profile.last_name = self.cleaned_data['last_name']
         if commit:
-            user.save()
+            profile.save()
         return user
     
 
@@ -27,11 +32,11 @@ class CustomUserChangeForm(UserChangeForm):
         model = CustomUser
         fields = ['email', 'phone']
         help_texts = {
-            'email': 'A valid email address, please.',
+            'email': 'لطفا یک آدرس ایمیل معتبر وارد کنید.',
         }
         widgets = {
-            'email': forms.EmailInput(attrs={'placeholder': 'Email Address'}),
-            'phone': forms.TextInput(attrs={'placeholder': 'Phone Number'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'آدرس ایمیل'}),
+            'phone': forms.TextInput(attrs={'placeholder': 'شماره تلفن'}),
         }
     
     def save(self, commit=True):

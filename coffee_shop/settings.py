@@ -158,3 +158,10 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 SANDBOX = True 
 MERCHANT_ID = 'a0000000-0000-0000-0000-000000000000'
+
+# Internationalization
+LANGUAGE_CODE = 'fa-ir'
+TIME_ZONE = 'Asia/Tehran'
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
