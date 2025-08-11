@@ -23,7 +23,7 @@
 
             <!-- Navigation Menu -->
             <nav class="space-y-2 text-right">
-                <a href="{% url 'dashboard' %}" class="flex items-center p-3 rounded-lg text-gray-200 hover:bg-gray-700 transition-colors">
+                <a href="{% url 'profile-favorites' user.id %}" class="flex items-center p-3 rounded-lg text-gray-200 hover:bg-gray-700 transition-colors">
                     <svg class="h-5 w-5 ml-3 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.5l1.318-1.182a4.5 4.5 0 116.364 6.364L12 18.75l-7.682-7.682a4.5 4.5 0 010-6.364z" /></svg>
                     <span>لیست علاقه‌مندی‌ها</span>
                 </a>
@@ -56,7 +56,7 @@
                                     <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default-product.png' %}{% endif %}" alt="{{ product.name }}" class="w-16 h-16 object-cover rounded-md">
                                     <span class="text-lg text-gray-200 hover:text-amber-400">{{ product.name }}</span>
                                 </a>
-                                <form action="{% url 'remove_from_favorites' product.id %}" method="post" class="inline">
+                                <form action="{% url 'remove-from-favorites' user.id product.id %}" method="post" class="inline">
                                     {% csrf_token %}
                                     <button type="submit" class="text-red-500 hover:text-red-400 transition-colors text-sm font-semibold">(حذف)</button>
                                 </form>

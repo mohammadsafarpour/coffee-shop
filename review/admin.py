@@ -4,6 +4,7 @@ from .models import Review
 class ReviewAdmin(admin.ModelAdmin):
     list_display = ('product', 'user', 'rating', 'created_at', 'is_approved')
     list_filter = ('is_approved', 'created_at')
+    list_editable = ('is_approved',)
     search_fields = ('product__name', 'user__email')
     ordering = ('-created_at',)
 
@@ -17,4 +18,3 @@ class ReviewAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Review, ReviewAdmin)
-

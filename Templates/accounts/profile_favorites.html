@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>علاقه‌مندی‌های {{ user.profile.first_name | default:user.phone }} {{ user.profile.last_name | default:'' }}</h2>
+  <ul>
+    {% for product in user.profile.favorites.all %}
+      <li>{{ product.name }}</li>
+    {% empty %}
+      <li>هیچ محصولی به علاقه‌مندی‌ها اضافه نشده است.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

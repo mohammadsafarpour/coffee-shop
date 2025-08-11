@@ -52,12 +52,14 @@ class ProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'first_name', 'last_name', 'user_phone')
     search_fields = ('first_name', 'last_name', 'user__phone', 'user__email')
     list_filter = ('user__is_active',)
-    readonly_fields = ('user', 'user_phone') 
+    readonly_fields = ('user', 'user_phone')
 
     fieldsets = (
-        (None, {'fields': ('user', 'user_phone', 'avatar')}),
+        ('اطلاعات کاربری', {'fields': ('user', 'user_phone', 'avatar')}),
         ('اطلاعات شخصی', {'fields': ('first_name', 'last_name')}),
+        ('علاقه‌مندی‌ها', {'fields': ('favorites',)}),
     )
+
 
     @admin.display(description='شماره تلفن')
     def user_phone(self, obj):
