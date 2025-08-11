@@ -1,18 +1,15 @@
 from .models import Profile
 from django.contrib import messages
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views import generic
-# from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-# from django.http import HttpResponseRedirect
 from django.core.mail import send_mail
 from django.conf import settings
 from .forms import CustomUserCreationForm, CustomUserChangeForm, ProfileUpdateForm
 from kavenegar import KavenegarAPI, APIException, HTTPException
+from products.models import Product
 
-
-# تابع شبیه‌سازی شده برای ارسال پیامک
 def send_welcome_sms(phone_number):
     api = KavenegarAPI(settings.KAVENEGAR_API_KEY)
     try:
@@ -91,36 +88,21 @@ class ProfileEditView(LoginRequiredMixin, generic.UpdateView):
     def get_success_url(self):
         return reverse("dashboard")
 
+class ProfileFavoritesView(LoginRequiredMixin, generic.TemplateView):
+    template_name = "accounts/profile_favorites.html"
 
-# class ProfileEditView(LoginRequiredMixin, generic.UpdateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["profile"] = self.request.user.profile
+        return context
 
-#     model = Profile
-#     form_class = ProfileUpdateForm(instance=request.user.profile)
-#     fields = ('first_name','last_name', 'avatar', 'favorites')
-#     template_name = 'accounts/profile_edit.html'
+class ProfileRemoveFavoriteView(LoginRequiredMixin, generic.View):
 
-#     def get_object(self, queryset=None):
-#         return self.request.user.profile
-
-
-
-# class AddToFavoritesView(LoginRequiredMixin, generic.View):
-
-#     def get(self, request, *args, **kwargs):
-#         product = get_object_or_404(Product, pk=self.kwargs['product_id'])
-
-#         request.user.profile.favorites.add(product)
-#         کاربر را به صفحه‌ای که از آن آمده بازمی‌گردانیم
-#         return HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('dashboard')))
-
-
-# class RemoveFromFavoritesView(LoginRequiredMixin, generic.View):
-
-
-#     def get(self, request, *args, **kwargs):
-#         product = get_object_or_404(Product, pk=self.kwargs['product_id'])
-#         request.user.profile.favorites.remove(product)
-#         return HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('dashboard')))
+    def post(self, request, user_id, product_id):
+        profile = get_object_or_404(Profile, user_id=user_id)
+        product = get_object_or_404(Product, id=product_id)
+        profile.favorites.remove(product)
+        return HttpResponseRedirect(reverse("profile-favorites", args=[user_id]))
 
 
 # class SignUpView(generic.CreateView):

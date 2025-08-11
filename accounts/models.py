@@ -54,8 +54,8 @@ class Profile(models.Model):
     favorites = models.ManyToManyField("products.Product", blank=True, verbose_name="علاقه‌مندی‌ها")
 
     class Meta:
-        # verbose_name = 'پروفایل'
-        # verbose_name_plural = 'پروفایل‌ها'
+        verbose_name = 'پروفایل'
+        verbose_name_plural = 'پروفایل‌ها'
         ordering = ['user']
         # unique_together = ('user', 'first_name', 'last_name')
 
