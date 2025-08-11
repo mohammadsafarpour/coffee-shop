@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, CreateView, DetailView
 from django.urls import reverse_lazy
 
-from .models import Product, Favorite
+from .models import Product #, Favorite
 
 class ProductListView(ListView):
     model = Product
@@ -31,17 +31,17 @@ class ProductDetailView(DetailView):
         product = self.get_object()
         user = self.request.user
         if user.is_authenticated:
-            context['is_favorite'] = Favorite.objects.filter(user=user, product=product).exists()
+            context['is_favorite'] = self.request.user.profile.favorites.filter(pk=product.pk).exists() #Favorite.objects.filter(user=user, product=product).exists()
         else:
             context['is_favorite'] = False
         return context
 
-@login_required
-def toggle_favorite(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    favorite, created = Favorite.objects.get_or_create(user=request.user, product=product)
+# @login_required
+# def toggle_favorite(request, product_id):
+#     product = get_object_or_404(Product, id=product_id)
+#     favorite, created = Favorite.objects.get_or_create(user=request.user, product=product)
 
-    if not created:
-        favorite.delete()
+#     if not created:
+#         favorite.delete()
 
-    return redirect('product-detail', pk=product_id)
+#     return redirect('product-detail', pk=product_id)
