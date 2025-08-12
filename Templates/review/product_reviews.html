@@ -17,7 +17,7 @@
         </div>
 
         {% if user.is_authenticated %}
-            <form action="{% url 'add_review' product.id %}" method="post" class="mb-10 bg-gray-800 bg-opacity-40 p-6 rounded-lg">
+            <form action="{% url 'review:add_review' product.id %}" method="post" class="mb-10 bg-gray-800 bg-opacity-40 p-6 rounded-lg">
                 {% csrf_token %}
                 <h3 class="text-xl font-semibold text-white mb-4">نظر خود را ثبت کنید</h3>
 
