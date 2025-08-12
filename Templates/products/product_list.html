@@ -8,7 +8,7 @@
 <div class="flex justify-between items-center mb-8">
     <h1 class="text-3xl font-bold text-amber-400">محصولات ما</h1>
     {% if user.is_staff %}
-    <a href="{% url 'product-create' %}" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-2 px-5 rounded-lg transition-all duration-300 transform hover:scale-105">
+    <a href="{% url 'products:product-create' %}" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-2 px-5 rounded-lg transition-all duration-300 transform hover:scale-105">
         افزودن محصول جدید
     </a>
     {% endif %}
