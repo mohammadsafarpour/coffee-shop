@@ -43,14 +43,14 @@ class ProductDetailView(DetailView):
 def add_to_favorites(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     request.user.profile.favorites.add(product)
-    return redirect(request.META.get('HTTP_REFERER'), 'product-detail')
+    return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required
 def remove_from_favorites(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     profile = request.user.profile
     profile.favorites.remove(product)
-    return redirect(request.META.get('HTTP_REFERER'), 'product-detail')
+    return redirect(request.META.get('HTTP_REFERER'))
 
 class ProductCategoryView(ListView):
     model = Product

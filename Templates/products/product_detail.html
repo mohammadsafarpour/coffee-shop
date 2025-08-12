@@ -145,7 +145,7 @@
         {% if user.is_authenticated %}
             <article class="mb-10 bg-gray-800 bg-opacity-50 p-5 md:p-6 rounded-xl border border-gray-700 transition-all duration-300 hover:bg-opacity-60">
                 <h3 class="text-xl font-semibold text-white mb-4">نظر خود را ثبت کنید</h3>
-                <form id="review-form" action="{% url 'add_review' product.id %}" method="post">
+                <form id="review-form" action="{% url 'review:add_review' product.id %}" method="post">
                     {% csrf_token %}
                     
                     <!-- Display form errors -->

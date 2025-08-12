@@ -26,14 +26,14 @@ def add_review(request, product_id):
         if form.is_valid():
             
             if Review.objects.filter(product=product, user=request.user).exists():
-                return redirect('product_reviews', product_id=product.id)
+                return redirect('review:product_reviews', product_id=product.id)
             
             review = form.save(commit=False)
             review.product = product
             review.user = request.user
             review.save()
-            return redirect('product_reviews', product_id=product.id)
-    return redirect('product_reviews', product_id=product.id)
+            return redirect('review:product_reviews', product_id=product.id)
+    return redirect('review:product_reviews', product_id=product.id)
 
 
 # @login_required
