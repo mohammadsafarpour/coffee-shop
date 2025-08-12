@@ -7,21 +7,30 @@ from .models import Order, OrderItem
 from products.models import Product, Category
 from datetime import datetime, timedelta
 
-
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart = request.session.get('cart', {})
-    quantity = int(request.GET.get('quantity', '1'))
+    
+    if request.method == 'POST':
+        try:
+            quantity_to_add = int(request.POST.get('quantity', '1'))
+            if quantity_to_add < 1:
+                quantity_to_add = 1
+        except (ValueError, TypeError):
+            quantity_to_add = 1
+    else:
+        quantity_to_add = int(request.GET.get('quantity', '1'))
+
     pid_str = str(product_id)
 
     if pid_str in cart:
-        cart[pid_str]['quantity'] += quantity
+        cart[pid_str]['quantity'] += quantity_to_add
     else:
-        cart[pid_str] = {'quantity': quantity, 'price': str(product.price)}
+        cart[pid_str] = {'quantity': quantity_to_add, 'price': str(product.price)}
     
     request.session['cart'] = cart
     request.session.modified = True
-    return redirect(request.META.get('HTTP_REFERER', 'product-list'))
+    return redirect('orders:cart_detail') 
 
 def remove_from_cart(request, product_id):
     cart = request.session.get('cart', {})
@@ -81,7 +90,7 @@ def payment_request(request):
 
     total_price = sum(int(item_data['price']) * item_data['quantity'] for item_data in cart_session.values())
     amount_in_rials = total_price * 10
-
+    
     merchant_id = getattr(settings, 'MERCHANT_ID', 'YOUR_MERCHANT_ID')
 
     request_data = {
@@ -103,6 +112,7 @@ def payment_request(request):
     
     error_message = res.json().get('errors', {'message': 'خطایی در ارتباط با درگاه پرداخت رخ داد.'})
     return render(request, 'orders/payment_error.html', {'error': error_message})
+
 
 @login_required
 def payment_verify(request):
@@ -145,6 +155,8 @@ def payment_verify(request):
                     quantity=item_data['quantity'],
                     price=product.price
                 )
+                product.stock -= item_data['quantity']
+                product.save()
             
             del request.session['cart']
             request.session.modified = True
