@@ -5,6 +5,7 @@ from django.views.generic import ListView, CreateView, DetailView
 from django.urls import reverse_lazy
 
 from .models import Product #, Favorite
+from accounts.models import Profile
 
 class ProductListView(ListView):
     model = Product
@@ -36,12 +37,26 @@ class ProductDetailView(DetailView):
             context['is_favorite'] = False
         return context
 
+class ProductCategoryView(ListView):
+    model = Product
+    template_name = 'products/product_list.html'
+    context_object_name = 'products'
+
+    def get_queryset(self):
+        category_slug = self.kwargs['category_slug']
+        return Product.objects.filter(category__slug=category_slug)
+
 # @login_required
 # def toggle_favorite(request, product_id):
 #     product = get_object_or_404(Product, id=product_id)
-#     favorite, created = Favorite.objects.get_or_create(user=request.user, product=product)
+#     profile = request.user.profile
+#     favorite = profile.favorites.filter(product=product).first()
 
-#     if not created:
-#         favorite.delete()
 
+#     if favorite:
+#         profile.favorites.remove(product)
+#     else:
+#         profile.favorites.add(product)
+
+    
 #     return redirect('product-detail', pk=product_id)
