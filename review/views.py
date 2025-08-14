@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views import generic
+from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Review
 from .forms import ReviewForm
@@ -47,11 +47,11 @@ def add_review(request, product_id):
             try:
                 review.save()
                 messages.success(request, 'نظر شما با موفقیت ثبت شد و پس از تایید مدیر نمایش داده خواهد شد.')
-                # return redirect('products:product-detail', pk=product.id)
+                return redirect('products:product-detail', pk=product.id)
 
             except IntegrityError:
                 messages.error(request, 'شما قبلاً برای این محصول نظر داده‌اید.')
-                # return redirect('products:product-detail', pk=product.id)
+                return redirect('products:product-detail', pk=product.id)
         # else:
         #     messages.error(request, 'لطفا فرم را به درستی پر کنید.')
 
@@ -62,6 +62,16 @@ def add_review(request, product_id):
     # reviews = product.reviews.filter(is_approved=True)
     # return render(request, 'review/product_reviews.html', {'form': form, 'product': product, 'reviews': product.reviews.filter(is_approved=True)})
     return redirect ('products:product-detail', pk=product.id)
+
+class UserReviewsView(LoginRequiredMixin, ListView):
+    model = Review
+    template_name = 'review/user_reviews.html'
+    context_object_name = 'reviews'
+    
+    def get_queryset(self):
+        return Review.objects.filter(
+            user=self.request.user
+        ).order_by('-created_at')
 
 
 # class UserReviewView(LoginRequiredMixin, generic.View):
