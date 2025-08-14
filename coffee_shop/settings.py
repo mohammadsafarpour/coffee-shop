@@ -72,6 +72,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'orders.context_processors.cart_context',
+                'notification.context_processors.unread_notifications_count',
             ],
         },
     },
@@ -159,8 +160,8 @@ SANDBOX = True
 MERCHANT_ID = 'a0000000-0000-0000-0000-000000000000'
 
 # Internationalization
-LANGUAGE_CODE = 'fa-ir'
-TIME_ZONE = 'Asia/Tehran'
-USE_I18N = True
-USE_L10N = True
-USE_TZ = True
+# LANGUAGE_CODE = 'fa-ir'
+# TIME_ZONE = 'Asia/Tehran'
+# USE_I18N = True
+# USE_L10N = True
+# USE_TZ = True

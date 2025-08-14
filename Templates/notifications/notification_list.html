@@ -8,21 +8,67 @@
     <h1 class="text-3xl font-bold text-amber-400 text-center mb-8">صندوق ورودی شما</h1>
 
     <div class="glass-card rounded-2xl p-6">
-        {% if notification %}
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white">
+                تعداد اعلان‌ها: <span class="text-amber-400">{{ notifications.count }}</span>
+            </h2>
+            {% if notifications %}
+            <form action="{% url 'notification:clear-all-notifications' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="text-red-500 hover:text-red-400 text-sm font-semibold flex items-center">
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    حذف همه
+                </button>
+            </form>
+            {% endif %}
+        </div>
+
+        {% if notifications %}
             <ul class="space-y-4">
                 {% for note in notifications %}
                     <li class="p-4 rounded-lg transition-colors {% if not note.is_read %}bg-amber-500 bg-opacity-10 border-r-4 border-amber-500{% else %}bg-gray-800 bg-opacity-40{% endif %}">
                         <div class="flex justify-between items-start">
                             <div class="flex-grow">
-                                <h3 class="text-lg font-semibold text-white">{{ note.title }}</h3>
+                                <div class="flex items-center mb-2">
+                                    {% if note.notification_type == 'order' %}
+                                    <svg class="w-5 h-5 text-amber-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                    </svg>
+                                    {% elif note.notification_type == 'review' %}
+                                    <svg class="w-5 h-5 text-amber-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                    {% elif note.notification_type == 'promotion' %}
+                                    <svg class="w-5 h-5 text-amber-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"></path>
+                                    </svg>
+                                    {% endif %}
+                                    <h3 class="text-lg font-semibold text-white">{{ note.title }}</h3>
+                                </div>
                                 <p class="text-gray-300 text-sm mt-1">{{ note.message }}</p>
                             </div>
-                            {% if not note.is_read %}
-                                <form action="{% url 'mark_notification_as_read' note.id %}" method="post" class="mr-4 flex-shrink-0">
+                            <div class="flex space-x-2 space-x-reverse">
+                                {% if not note.is_read %}
+                                    <form action="{% url 'notification:mark-notification-as-read' note.id %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-xs text-cyan-400 hover:underline" title="خوانده شد">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                {% endif %}
+                                <form action="{% url 'notification:delete-notification' note.id %}" method="post">
                                     {% csrf_token %}
-                                    <button type="submit" class="text-xs text-cyan-400 hover:underline" title="خوانده شد">خوانده شد</button>
+                                    <button type="submit" class="text-xs text-red-400 hover:text-red-300" title="حذف">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </button>
                                 </form>
-                            {% endif %}
+                            </div>
                         </div>
                         <p class="text-gray-500 text-xs mt-3 text-left">{{ note.created_at|date:"Y/m/d - H:i" }}</p>
                     </li>
@@ -30,7 +76,10 @@
             </ul>
         {% else %}
             <div class="text-center py-16">
-                <p class="text-gray-400 text-lg">شما هیچ اطلاعیه‌ای ندارید.</p>
+                <svg class="w-16 h-16 mx-auto text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-gray-400 text-lg mt-4">شما هیچ اعلان جدیدی ندارید.</p>
             </div>
         {% endif %}
     </div>

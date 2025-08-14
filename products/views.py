@@ -2,9 +2,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView
-from accounts.models import Profile
-from .models import Product #, Favorite
-
+from django.db.models import Avg
+from review.forms import ReviewForm
+from .models import Product
+from orders.models import OrderItem
 
 
 class ProductListView(ListView):
@@ -20,9 +21,9 @@ class ProductCreateView(CreateView):
     
     success_url = reverse_lazy('products:product-list')
 
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    return render(request, 'products/product_detail.html', {'product': product})
+# def product_detail(request, pk):
+#     product = get_object_or_404(Product, pk=pk)
+#     return render(request, 'products/product_detail.html', {'product': product})
 
 class ProductDetailView(DetailView):
     model = Product
@@ -35,9 +36,40 @@ class ProductDetailView(DetailView):
         user = self.request.user
         if user.is_authenticated:
             context['is_favorite'] = self.request.user.profile.favorites.filter(pk=product.pk).exists()
+            has_purchased = OrderItem.objects.filter(
+                order__customer=user,
+                product=product
+            ).exists()
+            context['has_purchased'] = has_purchased
         else:
             context['is_favorite'] = False
+
+        reviews = product.reviews.filter(is_approved=True)
+        context['reviews'] = reviews
+        context['reviews_count'] = reviews.count()
+
+        average = reviews.aggregate(Avg('rating')).get('rating__avg')
+        context['average_rating'] = round(average) if average else 0
+        
+        reviews_with_status = []
+        for review in reviews:
+            reviews_with_status.append({
+                'review': review,
+                'is_owner': review.user == user
+            })
+        context['review_form'] = ReviewForm()
+
+        # context['reviews'] = reviews_with_status
+
+        # has_purchased = OrderItem.objects.filter(order__customer=review.user, product=product).exists()
+
+        # reviews_with_status.append({'review': review, 'has_purchased': has_purchased})
+        
+        # context['reviews_with_status'] = reviews_with_status
+
+            
         return context
+    
 
 @login_required
 def add_to_favorites(request, product_id):
