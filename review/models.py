@@ -12,15 +12,16 @@ class Review(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(5)],
         verbose_name="امتیاز"
     )
-    is_approved = models.BooleanField(default=True, verbose_name="تایید شده") 
+    is_approved = models.BooleanField(default=False, verbose_name="تایید شده") 
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-created_at']
-        unique_together = ('product', 'user')
+        # unique_together = ('product', 'user')
 
     def __str__(self):
-        return f'نظر {self.user.phone} برای {self.product.name}'
+        user_display_name = self.user.get_full_name() or self.user.phone
+        return f'نظر {user_display_name} برای {self.product.name}'
 
 
 # class Review(models.Model):

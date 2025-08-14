@@ -1,13 +1,34 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}علاقه‌مندی‌های من{% endblock %}
+
 {% block content %}
-  <h2>علاقه‌مندی‌های {{ user.profile.first_name | default:user.phone }} {{ user.profile.last_name | default:'' }}</h2>
-  <ul>
-    {% for product in user.profile.favorites.all %}
-      <li>{{ product.name }}</li>
-    {% empty %}
-      <li>هیچ محصولی به علاقه‌مندی‌ها اضافه نشده است.</li>
-    {% endfor %}
-  </ul>
+<div class="max-w-4xl mx-auto">
+    <div class="glass-card rounded-2xl p-8">
+        <h1 class="text-3xl font-bold text-amber-400 mb-8 font-lalezar">لیست علاقه‌مندی‌ها</h1>
+        {% with favorites=user.profile.favorites.all %}
+            {% if favorites %}
+                <ul class="space-y-4">
+                    {% for product in favorites %}
+                        <li class="flex justify-between items-center bg-gray-800 bg-opacity-50 p-4 rounded-lg transition-shadow hover:shadow-lg">
+                            <a href="{% url 'products:product-detail' product.pk %}" class="flex items-center gap-4">
+                                <img src="{% if product.image %}{{ product.image.url }}{% else %}https://placehold.co/100x100/161616/e0e0e0?text=No+Image{% endif %}" alt="{{ product.name }}" class="w-16 h-16 object-cover rounded-md">
+                                <span class="text-lg text-gray-200 hover:text-amber-400">{{ product.name }}</span>
+                            </a>
+                            <form action="{% url 'products:remove-from-favorites' product.id %}" method="post" class="inline">
+                                {% csrf_token %}
+                                <button type="submit" class="text-red-500 hover:text-red-400 transition-colors text-sm font-semibold" aria-label="حذف {{ product.name }} از علاقه‌مندی‌ها">(حذف)</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="text-center py-10">
+                    <p class="text-gray-400">شما هنوز هیچ محصولی را به لیست علاقه‌مندی‌های خود اضافه نکرده‌اید.</p>
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>
 {% endblock %}
