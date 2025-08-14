@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Notification
+from django.core.paginator import Paginator
+
 
 @login_required
 def notification_list(request):
@@ -15,9 +17,13 @@ def notification_list(request):
     notifications = Notification.objects.filter(
         user=request.user
     ).order_by('-created_at')
+
+    paginator = Paginator(notifications, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     
     return render(request, 'notifications/notification_list.html', {
-        'notifications': notifications
+        'page_obj': page_obj
     })
 
 @login_required

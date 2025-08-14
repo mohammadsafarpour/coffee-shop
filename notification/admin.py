@@ -23,6 +23,9 @@ class NotificationAdmin(admin.ModelAdmin):
         self.message_user(request, "اعلان‌ها با موفقیت حذف شدند.")
     delete_notifications.short_description = "حذف اعلان‌ها"
 
+    def short_message(self, obj):
+        return obj.short_message(50)
+    short_message.short_description = 'پیام'
 
 
 admin.site.register(Notification, NotificationAdmin)

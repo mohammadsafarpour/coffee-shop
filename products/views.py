@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Avg
 from review.forms import ReviewForm
 from .models import Product
@@ -93,6 +94,30 @@ class ProductCategoryView(ListView):
         category_slug = self.kwargs['category_slug']
         return Product.objects.filter(category__slug=category_slug)
 
+
+def product_reviews(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    reviews_list = product.reviews.filter(is_approved=True).order_by('-created_at')
+    form = ReviewForm()
+    
+    paginator = Paginator(reviews_list, 200)
+    page = request.GET.get('page')
+    
+    try:
+        reviews = paginator.page(page)
+    except PageNotAnInteger:
+        reviews = paginator.page(1)
+    except EmptyPage:
+        reviews = paginator.page(paginator.num_pages)
+    
+    context = {
+        'product': product,
+        'reviews': reviews,
+        'purchased': OrderItem.objects.filter(order__customer=request.user, product=product).exists(),
+        'form': form,
+    }
+    
+    return render(request, 'review/product_reviews.html', context)
 
 # @login_required
 # def toggle_favorite(request, product_id):

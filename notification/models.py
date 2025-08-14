@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 # from django.conf import settings
 from accounts.models import CustomUser
+from django.urls import reverse
 
 CustomUser = get_user_model()
 
@@ -48,12 +49,19 @@ class Notification(models.Model):
             notification_type=notif_type,
             related_id=related_id
         )
+    
+    def get_absolute_url(self):
+        if self.notification_type == 'review':
+            return reverse('review:review-detail', kwargs={'pk': self.related_id})
+        elif self.notification_type == 'order':
+            return reverse('order:order-detail', kwargs={'pk': self.related_id})
 
-# class Pusher(models.Model):
-#     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-#     token = models.CharField(max_length=255)
-#     created_at = models.DateTimeField(auto_now_add=True)
+        return reverse('notification:notification-list', kwargs={'pk': self.id})
 
+    def short_message(self, length=100):
+        if len(self.message) > length:
+            return self.message[:length] + '...'
+        return self.message
 
 # def send_notification(user, title, message):
 #     Notification.objects.create(user=Notification.user, title=Notification.title, message=message)
