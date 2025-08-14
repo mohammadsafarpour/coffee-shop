@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser, Profile
+from django.utils.html import format_html
 
 
 @admin.register(CustomUser)
@@ -46,6 +47,7 @@ class CustomUserAdmin(UserAdmin):
     )
     
     filter_horizontal = ("groups", "user_permissions",)
+
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
