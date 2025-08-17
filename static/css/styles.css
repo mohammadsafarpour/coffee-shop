@@ -1,0 +1,45 @@
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            /* Background image with a dark overlay for readability */
+            background-image: linear-gradient(rgba(18, 18, 18, 0.97), rgba(18, 18, 18, 0.97)), url('https://www.transparenttextures.com/patterns/arabica.png');
+            color: #E0E0E0;
+        }
+        /* Applying the Lalezar font for headings and logo */
+        .font-lalezar {
+            font-family: 'Lalezar', cursive;
+        }
+        .glass-card {
+            background: rgba(22, 22, 22, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        /* Custom form styling */
+        form p {
+            margin-bottom: 1rem;
+        }
+        form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #a0aec0; 
+        }
+        form input, form select, form textarea, form password {
+            width: 100%;
+            background-color: rgba(10, 10, 10, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #E0E0E0;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        form input:focus, form select:focus, form textarea:focus {
+            outline: none;
+            border-color: #f59e0b; 
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.4);
+        }
+        /* Smooth transition for links */
+        nav a, footer a {
+            transition: all 0.3s ease;
+        }
+    

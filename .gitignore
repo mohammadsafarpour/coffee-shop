@@ -32,7 +32,7 @@ local_settings.py
 db.sqlite3
 
 # Collected static files (keep app static files)
-/static/
+# /static/
 
 ### Migrations - KEEP THESE COMMENTED UNLESS YOU REALLY WANT TO IGNORE MIGRATIONS ###
 # comment below only if you want to commit migrations

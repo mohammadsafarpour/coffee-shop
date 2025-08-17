@@ -73,6 +73,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'orders.context_processors.cart_context',
                 'notification.context_processors.unread_notifications_count',
+                'products.context_processors.categories_context'
             ],
         },
     },
@@ -115,13 +116,16 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_TZ = True
 
+# Internationalization
+LANGUAGE_CODE = 'fa-ir'
+TIME_ZONE = 'Asia/Tehran'
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
@@ -155,13 +159,5 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-
 SANDBOX = True 
 MERCHANT_ID = 'a0000000-0000-0000-0000-000000000000'
-
-# Internationalization
-# LANGUAGE_CODE = 'fa-ir'
-# TIME_ZONE = 'Asia/Tehran'
-# USE_I18N = True
-# USE_L10N = True
-# USE_TZ = True
