@@ -201,7 +201,7 @@
 
       <!-- افزودن/ویرایش نظر -->
       {% if user.is_authenticated %}
-        {% if has_purchased %}
+          
           <article class="mb-10 bg-gray-800 bg-opacity-50 p-5 md:p-6 rounded-xl border border-gray-700 transition-all duration-300 hover:bg-opacity-60">
             <h3 class="text-xl font-semibold text-white mb-4">نظر خود را ثبت کنید</h3>
 
@@ -284,11 +284,9 @@
             </form>
           </article>
         {% else %}
-          <div class="mb-10 text-gray-400 text-center bg-gray-800 bg-opacity-50 p-6 rounded-xl border border-gray-700">
-            <p>برای ثبت نظر، ابتدا محصول را خریداری کنید.</p>
-          </div>
-        {% endif %}
-      {% else %}
+        
+      
+      
         <div class="mb-10 text-gray-400 text-center bg-gray-800 bg-opacity-50 p-6 rounded-xl border border-gray-700">
           <p>برای ثبت نظر لطفاً
             <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
@@ -313,7 +311,7 @@
                       <div>
                         <span class="font-bold text-amber-400">{{ review.user.profile.first_name|default:review.user.get_username }}</span>
                         {% if item.is_verified_buyer %}
-                          <span class="badge badge-success text-xs mr-1">خریدار تأیید شده</span>
+                          <span class="custom-buyer-badge text-xs px-2 py-1 rounded-full mr-1">خریدار محصول</span>
                         {% endif %}
                         {% if item.is_owner %}
                           <span class="badge text-xs mr-1 bg-sky-900 bg-opacity-40 text-sky-300 border border-sky-700 px-2 py-0.5 rounded">نظر شما</span>
@@ -528,6 +526,13 @@ document.addEventListener('DOMContentLoaded', function () {
   
   .active-thumb {
     border-color: #f59e0b !important;
+  }
+
+  .custom-buyer-badge {
+    background-color: #95ffffff;
+    color: #067880da;
+    border: 1px solid #18a2a7ff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 </style>
 
