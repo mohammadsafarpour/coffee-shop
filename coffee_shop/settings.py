@@ -47,6 +47,9 @@ INSTALLED_APPS = [
     "notification.apps.NotificationConfig",
     'django_extensions',
     'rest_framework',
+    'rest_framework_simplejwt',
+    'drf_yasg',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -162,3 +165,12 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 SANDBOX = True 
 MERCHANT_ID = 'a0000000-0000-0000-0000-000000000000'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10, 
+}
