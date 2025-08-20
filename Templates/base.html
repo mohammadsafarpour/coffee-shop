@@ -18,11 +18,9 @@
     <style>
         body {
             font-family: 'Vazirmatn', sans-serif;
-            /* Background image with a dark overlay for readability */
             background-image: linear-gradient(rgba(18, 18, 18, 0.97), rgba(18, 18, 18, 0.97)), url('https://www.transparenttextures.com/patterns/arabica.png');
             color: #E0E0E0;
         }
-        /* Applying the Lalezar font for headings and logo */
         .font-lalezar {
             font-family: 'Lalezar', cursive;
         }
@@ -32,7 +30,6 @@
             -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        /* Custom form styling */
         form p {
             margin-bottom: 1rem;
         }
@@ -55,7 +52,6 @@
             border-color: #f59e0b; 
             box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.4);
         }
-        /* Smooth transition for links */
         nav a, footer a {
             transition: all 0.3s ease;
         }
@@ -68,11 +64,17 @@
             <a href="{% url 'products:product-list' %}" class="text-4xl font-lalezar text-amber-400 tracking-wider">تمیزکافه</a>
             <div class="flex items-center space-x-6 space-x-reverse">
                 <a href="{% url 'products:product-list' %}" class="text-lg hover:text-amber-400 transform hover:-translate-y-0.5">محصولات</a>
-                <!-- Categories Dropdown -->
-                <div x-data="{ open: false }" @mouseleave="open = false" class="relative">
-                    <button @mouseover="open = true" class="text-lg hover:text-amber-400 transform hover:-translate-y-0.5 flex items-center">
+                
+                <!-- Categories Dropdown (fixed) -->
+                <div x-data="{ open: false }" 
+                     @mouseenter="open = true" 
+                     @mouseleave="open = false" 
+                     class="relative">
+                    <button class="text-lg hover:text-amber-400 transform hover:-translate-y-0.5 flex items-center">
                         <span>دسته‌بندی‌ها</span>
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
                     </button>
                     <div x-show="open" 
                          x-transition:enter="transition ease-out duration-200"
