@@ -5,16 +5,46 @@
 {% block title %}لیست محصولات{% endblock %}
 
 {% block content %}
+<div class="text-center">
+    <h1 class="text-3xl font-bold text-amber-400 mb-8">محصولات ما</h1>
+</div>
+
 <div class="flex justify-between items-center mb-8">
-    <h1 class="text-3xl font-bold text-amber-400">محصولات ما</h1>
-    {% if user.is_staff %}
-    <a href="{% url 'products:product-create' %}" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-2 px-5 rounded-lg transition-all duration-300 transform hover:scale-105">
-        افزودن محصول جدید
-    </a>
-    {% endif %}
+        <!-- Categories Dropdown (fixed) -->
+        <div x-data="{ open: false }" 
+                @mouseenter="open = true" 
+                @mouseleave="open = false" 
+                class="relative">
+            <button class="text-lg hover:text-amber-400 transform hover:-translate-y-0.5 flex items-center">
+                <span>دسته‌بندی‌ها</span>
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+            <div x-show="open" 
+                    x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 transform -translate-y-2"
+                    x-transition:enter-end="opacity-100 transform translate-y-0"
+                    x-transition:leave="transition ease-in duration-150"
+                    x-transition:leave-start="opacity-100 transform translate-y-0"
+                    x-transition:leave-end="opacity-0 transform -translate-y-2"
+                    class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-20"
+                    style="display: none;">
+                <a href="{% url 'products:product-list' %}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-amber-500 hover:text-gray-900">همه محصولات</a>
+                {% for category in categories %}
+                    <a href="{% url 'products:product_list_by_category' category.slug %}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-amber-500 hover:text-gray-900">{{ category.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        {% if user.is_staff %}
+        <a href="{% url 'products:product-create' %}" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-2 px-5 rounded-lg transition-all duration-300 transform hover:scale-105">
+            افزودن محصول جدید
+        </a>
+        {% endif %}
 </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+
     {% for product in products %}
     <a href="{% url 'products:product-detail' product.pk %}" class="block glass-card rounded-xl p-5 text-center transform hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-between group">
         <div>
