@@ -44,7 +44,7 @@ urlpatterns = [
     path('api/v1/orders/', include('orders.urls')),
     path('api/v1/review/', include('review.urls')),
     path('api/v1/notification/', include('notification.urls')),
-    # path('api/v1/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('api/v1/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('', TemplateView.as_view(template_name='base.html'), name='home'),
