@@ -10,10 +10,10 @@ CustomUser = get_user_model()
 class Notification(models.Model):
 
     NOTIFICATION_TYPES = (
-        ('order', 'سفارش'),
-        ('review', 'نظر'),
-        ('system', 'سیستمی'),
-        ('promotion', 'تخفیف'),
+        ('order' , 'سفارش'),
+        ('review' , 'نظر'),
+        ('system' , 'سیستمی'),
+        ('promotion' , 'تخفیف'),
     )
     
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='notifications')
@@ -41,7 +41,7 @@ class Notification(models.Model):
 
 
     @classmethod
-    def create_notification(cls, user, title, message, notif_type='system', related_id=None):
+    def create_notification(cls, user, title, message, notif_type, related_id=None):
         return cls.objects.create(
             user=user,
             title=title,
@@ -62,6 +62,9 @@ class Notification(models.Model):
         if len(self.message) > length:
             return self.message[:length] + '...'
         return self.message
+
+    def __str__(self):
+        return f"Notification for {self.user.phone} - {self.title}"
 
 # def send_notification(user, title, message):
 #     Notification.objects.create(user=Notification.user, title=Notification.title, message=message)

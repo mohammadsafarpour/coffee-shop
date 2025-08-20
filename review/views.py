@@ -25,6 +25,10 @@ def product_reviews(request, product_id):
         "form": form,
     }
 
+    if Review.objects.filter(product=product, user=request.user).exists():
+        messages.error(request, "شما قبلاً برای این محصول نظر داده‌اید.")
+        return redirect("products:product-detail", pk=product.id)
+
     return render(request, "review/product_reviews.html", context)
 
 
@@ -40,34 +44,26 @@ def add_review(request, product_id):
             form = ReviewForm(request.POST)
 
         if form.is_valid():
-            # if Review.objects.filter(product=product, user=request.user).exists():
-            #     messages.error(request, 'You have already reviewed this product.')
-            # return redirect('review:product_reviews', product_id=product.id)
 
             review = form.save(commit=False)
             review.product = product
             review.user = request.user
-            # try:
             review.save()
+            if not review.is_approved:
+                Notification.objects.create(
+                    user=review.user,
+                    text=f"نظر جدیدی برای محصول {product.name} ثبت شده است و پس از تایید مدیر نمایش داده خواهد شد.",
+                    notification_type=review,
+                )
             messages.success(
                 request,
                 "نظر شما با موفقیت ثبت شد و پس از تایید مدیر نمایش داده خواهد شد.",
             )
-            #     return redirect("products:product-detail", pk=product.id)
-
-            # except IntegrityError:
-            #     messages.error(request, "شما قبلاً برای این محصول نظر داده‌اید.")
-            #     return redirect("products:product-detail", pk=product.id)
-        # else:
-        #     messages.error(request, 'لطفا فرم را به درستی پر کنید.')
-
-        #     return redirect('review:product_reviews', product_id=product.id)
+            return redirect("review:user_reviews")
     else:
         form = ReviewForm()
 
-    # reviews = product.reviews.filter(is_approved=True)
-    # return render(request, 'review/product_reviews.html', {'form': form, 'product': product, 'reviews': product.reviews.filter(is_approved=True)})
-    return redirect("products:product-detail", pk=product.id)
+    return redirect("review:product_reviews", product_id=product.id)
 
 
 class UserReviewsView(LoginRequiredMixin, ListView):
@@ -76,7 +72,9 @@ class UserReviewsView(LoginRequiredMixin, ListView):
     context_object_name = "reviews"
 
     def get_queryset(self):
-        return Review.objects.filter(user=self.request.user).order_by("-created_at")
+        return Review.objects.filter(user=self.request.user).select_related(
+            "product", "product__category"
+        ).order_by("-created_at")
 
 
 # class UserReviewView(LoginRequiredMixin, generic.View):
