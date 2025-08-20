@@ -32,11 +32,16 @@ class IngredientInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'price', 'is_active')
-    list_filter = ('category', 'is_active')
+    list_display = ('name', 'category', 'image_preview', 'stock', 'price', 'is_active', 'created_at')
+    list_filter = ('category', 'is_active', 'created_at')
     search_fields = ('name', 'description')
     prepopulated_fields = {'slug': ('name',)}
     inlines = [ProductImageInline, IngredientInline]
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" width="50" height="50" />', obj.image.url)
+        return "-"
+    image_preview.short_description = "پیش‌نمایش"
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
