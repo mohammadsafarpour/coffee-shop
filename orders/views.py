@@ -220,4 +220,4 @@ def order_list(request):
         'current_time_filter': time_filter,
         'current_category_filter': int(category_filter) if category_filter else None,
     }
-    return render(request, 'orders/list.html', context)
+    return render(request, 'orders/order_list.html', context)
