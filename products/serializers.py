@@ -43,15 +43,15 @@ class CategorySerializer(serializers.ModelSerializer):
 #   Product Serializer
 # -----------------------------
 class ProductSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(read_only=True)
-    api_main_image = ProductImageSerializer(read_only=True)
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+    image_main = serializers.ImageField(read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
-
 
     class Meta:
         model = Product
         fields = [
             'id',
+            'category',
             'name',
             'slug',
             'description',
@@ -59,7 +59,6 @@ class ProductSerializer(serializers.ModelSerializer):
             'is_active',
             'stock',
             'api_tags',
-            'category',
-            'api_main_image',
-            'images',
+            'image_main',
+            'images'
         ]
