@@ -25,5 +25,6 @@ urlpatterns = [
     path('<int:product_id>/favorite/remove/', remove_from_favorites, name='remove-from-favorites'),
     path('<slug:category_slug>/', ProductCategoryView.as_view(), name='product_list_by_category'),
     # path('api/', include(router.urls)),
+    
 
 ]

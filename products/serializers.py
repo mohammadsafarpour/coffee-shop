@@ -7,7 +7,17 @@ from .models import Product, Category, ProductImage
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'title', 'slug']
+        fields = [
+            'id', 
+            'name',
+            'slug', 
+            'description', 
+            'price', 
+            'is_active', 
+            'stock',
+            'api_tags',
+            'api_main_image',
+        ]
 
 
 # -----------------------------
@@ -20,19 +30,35 @@ class ProductImageSerializer(serializers.ModelSerializer):
         model = ProductImage
         fields = ['id', 'image', 'alt_text']
 
+# -----------------------------
+#   Category Serializer
+# -----------------------------
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'slug']
+
 
 # -----------------------------
 #   Product Serializer
 # -----------------------------
 class ProductSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(read_only=True)
-    image_main = serializers.ImageField(read_only=True, use_url=True)
-    images = ProductImageSerializer(source="productimage_set", many=True, read_only=True)
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+    image_main = serializers.ImageField(read_only=True)
+    images = ProductImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
         fields = [
-            'id', 'title', 'slug', 'description',
-            'price', 'is_active', 'created_at',
-            'category', 'image_main', 'images'
+            'id',
+            'category',
+            'name',
+            'slug',
+            'description',
+            'price',
+            'is_active',
+            'stock',
+            'api_tags',
+            'image_main',
+            'images'
         ]
