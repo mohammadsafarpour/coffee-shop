@@ -7,7 +7,10 @@ from django.contrib import messages
 from .models import Order, OrderItem
 from products.models import Product, Category
 from datetime import datetime, timedelta
-
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from .models import Order
+from .serializers import OrderSerializer
 
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -221,3 +224,10 @@ def order_list(request):
         'current_category_filter': int(category_filter) if category_filter else None,
     }
     return render(request, 'orders/order_list.html', context)
+
+class OrderHistoryApiView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        return Order.objects.filter(customer=self.request.user)

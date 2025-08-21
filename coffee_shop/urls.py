@@ -42,7 +42,7 @@ urlpatterns = [
 
     # path('api/v1/accounts/', include('accounts.api_urls')),
     path('api/v1/products/', include('products.api_urls')),
-    # path('api/v1/orders/', include('orders.api_urls')),
+    path('api/v1/orders/', include('orders.api_urls')),
     # path('api/v1/review/', include('review.api_urls')),
     # path('api/v1/notification/', include('notification.api_urls')),
 
