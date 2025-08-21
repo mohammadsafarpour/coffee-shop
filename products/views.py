@@ -1,20 +1,21 @@
 from typing import Optional
-from django.shortcuts import render, get_object_or_404, redirect, reverse
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Avg, Exists, OuterRef
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
 from review.forms import ReviewForm
 from .models import Product
 from orders.models import OrderItem
 from notification.models import Notification
-from django.contrib import messages
-from rest_framework import viewsets, filters
-from django_filters.rest_framework import DjangoFilterBackend
-from .models import Product, Category
-from .serializers import ProductSerializer, CategorySerializer
 
+
+# -----------------------
+# Class-based Views
+# -----------------------
 
 class ProductListView(ListView):
     model = Product
@@ -37,8 +38,7 @@ class ProductDetailView(DetailView):
 
     def get_reviews_qs(self, product):
         return (
-            product.reviews
-            .filter(is_approved=True)
+            product.reviews.filter(is_approved=True)
             .select_related('user', 'user__profile')
             .annotate(
                 is_verified_buyer=Exists(
@@ -67,11 +67,11 @@ class ProductDetailView(DetailView):
             for r in reviews_qs
         ]
 
-        avg = reviews_qs.aggregate(avg=Avg('rating'))['avg'] or 0
+        avg_rating = reviews_qs.aggregate(avg=Avg('rating'))['avg'] or 0
         context.update({
             'reviews_with_status': reviews_with_status,
             'reviews_count': reviews_qs.count(),
-            'average_rating': int(round(avg)) if avg else 0,
+            'average_rating': int(round(avg_rating)) if avg_rating else 0,
             'is_favorite': is_auth and user.profile.favorites.filter(pk=product.pk).exists(),
             'has_purchased': is_auth and OrderItem.objects.filter(order__customer=user, product=product).exists(),
             'has_reviewed': is_auth and product.reviews.filter(user=user).exists(),
@@ -80,28 +80,24 @@ class ProductDetailView(DetailView):
         return context
 
     def post(self, request, *args, **kwargs):
-        
         self.object = self.get_object()
+
         if not request.user.is_authenticated:
             messages.error(request, 'برای ارسال نظر وارد شوید.')
-            login_url = reverse('accounts:login') if 'accounts:login' in [n.name for n in self.request.resolver_match.namespace_list] else '/accounts/login/'
-            return redirect(f"{login_url}?next={request.path}")
+            return redirect(f"/accounts/login/?next={request.path}")
 
         form = ReviewForm(request.POST, request.FILES or None)
         if not form.is_valid():
-            
             context = self.get_context_data()
             context['review_form'] = form
             messages.error(request, 'ارسال ناموفق. فرم را دقیق پر کنید.')
             return render(request, self.template_name, context)
 
-        
         review = self.object.reviews.filter(user=request.user).first()
         data = form.cleaned_data
         if review:
             review.rating = data.get('rating')
             review.text = data.get('text')
-            
             review.is_approved = False
             review.save()
             messages.success(request, 'نظر شما بروزرسانی شد و برای تأیید ارسال شد.')
@@ -117,8 +113,21 @@ class ProductDetailView(DetailView):
         return redirect(self.object.get_absolute_url() if hasattr(self.object, 'get_absolute_url') else request.path)
 
 
+class ProductCategoryView(ListView):
+    model = Product
+    template_name = 'products/product_list.html'
+    context_object_name = 'products'
+
+    def get_queryset(self):
+        return Product.objects.filter(category__slug=self.kwargs.get('category_slug'))
+
+
+# -----------------------
+# Function-based Views
+# -----------------------
+
 @login_required
-def add_to_favorites(request, product_id):
+def add_to_favorites(request, product_id: int):
     product = get_object_or_404(Product, id=product_id)
     profile = request.user.profile
     profile.favorites.add(product)
@@ -137,7 +146,7 @@ def add_to_favorites(request, product_id):
 
 
 @login_required
-def remove_from_favorites(request: object, product_id: int) -> Optional[redirect]:
+def remove_from_favorites(request, product_id: int) -> Optional[redirect]:
     product = get_object_or_404(Product, id=product_id)
     profile = request.user.profile
     profile.favorites.remove(product)
@@ -155,16 +164,7 @@ def remove_from_favorites(request: object, product_id: int) -> Optional[redirect
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
-class ProductCategoryView(ListView):
-    model = Product
-    template_name = 'products/product_list.html'
-    context_object_name = 'products'
-
-    def get_queryset(self):
-        return Product.objects.filter(category__slug=self.kwargs.get('category_slug'))
-
-
-def product_reviews(request, product_id):
+def product_reviews(request, product_id: int):
     product = get_object_or_404(Product, id=product_id)
     reviews_list = product.reviews.filter(is_approved=True).order_by('-created_at')
     form = ReviewForm()
@@ -178,7 +178,6 @@ def product_reviews(request, product_id):
     except EmptyPage:
         reviews = paginator.page(paginator.num_pages)
 
-
     purchased = False
     if request.user.is_authenticated:
         purchased = OrderItem.objects.filter(order__customer=request.user, product=product).exists()
@@ -190,26 +189,3 @@ def product_reviews(request, product_id):
         'form': form,
     }
     return render(request, 'review/product_reviews.html', context)
-
-
-class ProductViewSet(viewsets.ReadOnlyModelViewSet):
-
-    queryset = Product.objects.filter(is_active=True)
-    serializer_class = ProductSerializer
-    
-
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    
-
-    filterset_fields = ['category__slug']
-    
-
-    search_fields = ['name', 'description']
-    
-    
-    ordering_fields = ['created_at', 'price']
-
-class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
-    
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer

@@ -15,38 +15,40 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, include
+from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView
 from products.views import ProductListView, ProductCreateView
-from django.conf import settings
-# from drf_yasg.views import get_schema_view
-# from drf_yasg import openapi
-# from rest_framework import permissions
 
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from rest_framework import permissions
 
-# schema_view = get_schema_view(
-#    openapi.Info(
-#       title="TamizCafe API",
-#       default_version='v1',
-#       description="مستندات API برای پروژه کافه",
-#       contact=openapi.Contact(email="contact@temizcafe.local"),
-#    ),
-#    public=True,
-#    permission_classes=(permissions.AllowAny,),
-# )
+schema_view = get_schema_view(
+   openapi.Info(
+      title="Coffee Shop API",
+      default_version='v1',
+      description="مستندات API برای پروژه کافه",
+      contact=openapi.Contact(email="contact@temizcafe.local"),
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('api/v1/', include('products.urls', namespace='products')),
-    # path('api/v1/accounts/', include('accounts.urls')),
-    # path('api/v1/orders/', include('orders.urls')),
-    # path('api/v1/review/', include('review.urls')),
-    # path('api/v1/notification/', include('notification.urls')),
-    # # path('api/v1/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    # path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    # path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+
+    # path('api/v1/accounts/', include('accounts.api_urls')),
+    path('api/v1/products/', include('products.api_urls')),
+    # path('api/v1/orders/', include('orders.api_urls')),
+    # path('api/v1/review/', include('review.api_urls')),
+    # path('api/v1/notification/', include('notification.api_urls')),
+
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+
     path('', TemplateView.as_view(template_name='base.html'), name='home'),
     path('accounts/login/',auth_views.LoginView.as_view(template_name='accounts/login.html'),name='login'),
     path('accounts/logout/',auth_views.LogoutView.as_view(template_name='accounts/logout.html'),name='logout'),
