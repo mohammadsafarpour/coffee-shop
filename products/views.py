@@ -10,6 +10,11 @@ from .models import Product
 from orders.models import OrderItem
 from notification.models import Notification
 from django.contrib import messages
+from rest_framework import viewsets, filters
+from django_filters.rest_framework import DjangoFilterBackend
+from .models import Product, Category
+from .serializers import ProductSerializer, CategorySerializer
+
 
 class ProductListView(ListView):
     model = Product
@@ -185,3 +190,26 @@ def product_reviews(request, product_id):
         'form': form,
     }
     return render(request, 'review/product_reviews.html', context)
+
+
+class ProductViewSet(viewsets.ReadOnlyModelViewSet):
+
+    queryset = Product.objects.filter(is_active=True)
+    serializer_class = ProductSerializer
+    
+
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    
+
+    filterset_fields = ['category__slug']
+    
+
+    search_fields = ['name', 'description']
+    
+    
+    ordering_fields = ['created_at', 'price']
+
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
