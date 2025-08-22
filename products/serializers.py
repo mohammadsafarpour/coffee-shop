@@ -51,7 +51,7 @@
 #         model = Product
 #         fields = fields = "__all__"
 
-#===================================== new one================
+#===================================== new one ================
 
 from rest_framework import serializers
 from .models import Product, Category, ProductImage, Ingredient
@@ -83,7 +83,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'product','image', 'alt_text']
 
 # -----------------------------
-#   Product Serializer (اصلی)
+#   Product Serializer
 # -----------------------------
 class ProductSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
