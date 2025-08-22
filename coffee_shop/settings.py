@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-=s0l5x&o_i(-4atgdn#4x6j200(&n+nyd6l7@b*d^5xzb*&3)-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS: list[str] = []
+ALLOWED_HOSTS: list[str] = ['127.0.0.1', 'localhost', '192.168.43.92']
 
 
 # Application definition
@@ -167,8 +167,20 @@ SANDBOX = True
 MERCHANT_ID = 'a0000000-0000-0000-0000-000000000000'
 
 
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'rest_framework_simplejwt.authentication.JWTAuthentication',
+#     ),
+#     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+#     'PAGE_SIZE': 10, 
+# }
+
+# in settings.py
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',

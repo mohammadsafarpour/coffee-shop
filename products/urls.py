@@ -18,7 +18,7 @@ urlpatterns = [
 
     path('', ProductListView.as_view(), name='product-list'),
     path('create/', ProductCreateView.as_view(), name='product-create'),
-    path('<slug:slug>/', ProductDetailView.as_view(), name='product-detail'),
+    path('<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
     path('category/<slug:category_slug>/', ProductCategoryView.as_view(), name='product-category'),
     path('<int:product_id>/reviews/', product_reviews, name='product-reviews'),
     path('<int:product_id>/favorite/add/', add_to_favorites, name='add-to-favorites'),

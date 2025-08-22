@@ -49,16 +49,16 @@ def add_review(request, product_id):
             review.product = product
             review.user = request.user
             review.save()
-            if not review.is_approved:
-                Notification.objects.create(
-                    user=review.user,
-                    text=f"نظر جدیدی برای محصول {product.name} ثبت شده است و پس از تایید مدیر نمایش داده خواهد شد.",
-                    notification_type=review,
-                )
-            messages.success(
-                request,
-                "نظر شما با موفقیت ثبت شد و پس از تایید مدیر نمایش داده خواهد شد.",
-            )
+            # if not review.is_approved:
+            #     # Notification.objects.create(
+            #     #     user=review.user,
+            #     #     text=f"نظر جدیدی برای محصول {product.name} ثبت شده است و پس از تایید مدیر نمایش داده خواهد شد.",
+            #     #     notification_type=review,
+            #     # )
+            # # messages.success(
+            #     request,
+            #     "نظر شما با موفقیت ثبت شد و پس از تایید مدیر نمایش داده خواهد شد.",
+            # )
             return redirect("review:user_reviews")
     else:
         form = ReviewForm()
