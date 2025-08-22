@@ -3,11 +3,9 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 # from django.contrib.auth import get_user_model
 from .models import CustomUser, Profile
+from django.conf import settings
 
 class CustomUserCreationForm(UserCreationForm):
-
-    first_name = forms.CharField(label='نام', max_length=30, required=False)
-    last_name = forms.CharField(label='نام خانوادگی', max_length=30, required=False)
 
     class Meta(UserCreationForm.Meta):
         model = CustomUser
@@ -16,8 +14,14 @@ class CustomUserCreationForm(UserCreationForm):
             'email': 'لطفا یک آدرس ایمیل معتبر وارد کنید.',
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['first_name'] = forms.CharField(label='نام', max_length=100)
+        self.fields['last_name'] = forms.CharField(label='نام خانوادگی', max_length=100)
+
     def save(self, commit=True):
-        user = super().save(commit=True)
+        user = super().save(commit=False)
+        user.save()
         profile = user.profile
         profile.first_name = self.cleaned_data['first_name']
         profile.last_name = self.cleaned_data['last_name']
@@ -70,6 +74,10 @@ class ProfileUpdateForm(forms.ModelForm):
         return profile
     
 class ProfileImageForm(forms.ModelForm):
+    """
+    Form for updating profile image.
+    """
+
     class Meta:
         model = Profile
         fields = ['avatar']
@@ -77,9 +85,38 @@ class ProfileImageForm(forms.ModelForm):
             'avatar': forms.FileInput(attrs={'accept': 'image/*'})
         }
 
+    def clean_avatar(self):
+        """
+        Validate the uploaded image.
+
+        :return: The validated image.
+        :rtype: File
+        """
+        avatar = self.cleaned_data.get('avatar')
+        if not avatar:
+            raise forms.ValidationError('لطفا یک تصویر انتخاب کنید.')
+        if avatar.size > settings.MAX_AVATAR_SIZE:
+            raise forms.ValidationError('حجم تصویر بیش از حد مجاز است.')
+        if not getattr(avatar, 'content_type', '').startswith('image/'):
+            raise forms.ValidationError('فقط فایل تصویری مجاز است.')
+        return avatar
+
     def save(self, commit=True):
+        """
+        Save the form data to the model instance.
+
+        :param commit: Whether to save the model instance to the database.
+        :type commit: bool
+        :return: The saved model instance.
+        :rtype: Profile
+        """
         profile = super().save(commit=False)
         if commit:
+            profile.avatar.save(
+                name=self.cleaned_data['avatar'].name,
+                content=self.cleaned_data['avatar'].file,
+                save=False,
+            )
             profile.save()
         return profile
     
