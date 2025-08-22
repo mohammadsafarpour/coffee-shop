@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Order
 from .serializers import OrderSerializer
 
-class OrderHistoryViewset(viewsets.ReadOnlyModelViewSet):
+class OrderHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = OrderSerializer
 
