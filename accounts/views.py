@@ -55,11 +55,10 @@ class SignUpView(generic.CreateView):
 class DashboardView(LoginRequiredMixin, generic.TemplateView):
     template_name = "accounts/dashboard.html"
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context["profile"] = self.request.user.profile
-    #     return context
-    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["products"] = Product.objects.all()
+        return context
 
 
 class ProfileEditView(LoginRequiredMixin, generic.UpdateView):
@@ -104,55 +103,14 @@ class ProfileRemoveFavoriteView(LoginRequiredMixin, generic.View):
         profile.favorites.remove(product)
         return HttpResponseRedirect(reverse("profile-favorites", args=[user_id]))
 
+class ProfileNotificationsView(LoginRequiredMixin, generic.TemplateView):
+    template_name = "accounts/profile_notifications.html"
 
-# class SignUpView(generic.CreateView):
-
-#     form_class = CustomUserCreationForm
-#     success_url = reverse_lazy('login')
-#     template_name = 'signup.html'
-
-# def user_login(request):
-#     if request.method == "POST":
-#         form = LoginForm(request.POST)
-#         if form.is_valid():
-#             cd = form.cleaned_data
-#             user = authenticate(request, email=cd["email"], password=cd["password"])
-#             if user is not None:
-#                 if user.is_active:
-#                     login(request, user)
-#                     return HttpResponse("Authenticated successfully")
-#                 else:
-#                     return HttpResponse("Disabled account")
-#             else:
-#                 return render(request, "accounts/login.html", {"form": form, "error": "Invalid login"})
-#     else:
-#         form = LoginForm()
-#         return render(request, "accounts/login.html", {"form": form})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        notifications = self.request.user.notifications.all()
+        context["unread_notifications_count"] = notifications.filter(is_read=False).count()
+        context["notifications"] = notifications.order_by("-created_at")
+        return context
 
 
-# @login_required
-# def dashboard(request):
-#     return render(request, "accounts/dashboard.html", {"section": "dashboard"})
-
-# def SignUpView(request):
-#     if request.method == "POST":
-#         form = SignUpForm(request.POST)
-#         if form.is_valid():
-#             user = form.save()
-#             # Send welcome email
-#             send_mail(
-#                 subject='خوش آمدید!',
-#                 message='ثبت‌نام شما با موفقیت انجام شد.',
-#                 from_email='your@example.com',
-#                 recipient_list=[user.email],
-#                 fail_silently=False,
-#             )
-#             # Send welcome SMS
-#             if user.phone:
-#                 send_sms(user.phone, 'ثبت‌نام شما با موفقیت انجام شد.')
-#             return HttpResponse("Registration successful. You can now log in.")
-#         else:
-#             return render(request, "accounts/signup.html", {"form": form})
-#     else:
-#         form = SignUpForm()
-#         return render(request, "accounts/signup.html", {"form": form})
