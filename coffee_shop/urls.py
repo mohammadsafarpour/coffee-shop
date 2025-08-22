@@ -31,18 +31,20 @@ schema_view = get_schema_view(
       title="Coffee Shop API",
       default_version='v1',
       description="مستندات API برای پروژه کافه",
-      contact=openapi.Contact(email="contact@temizcafe.local"),
+      contact=openapi.Contact(email="contact@tamizcafe.local"),
+      license=openapi.License(name="MIT License"),
    ),
    public=True,
    permission_classes=(permissions.AllowAny,),
 )
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # path('api/v1/accounts/', include('accounts.api_urls')),
+    path('api/v1/accounts/', include('accounts.api_urls')),
     path('api/v1/', include('products.api_urls')),
-    # path('api/v1/orders/', include('orders.api_urls')),
+    path('api/v1/orders/', include('orders.api_urls')),
     # path('api/v1/review/', include('review.api_urls')),
     # path('api/v1/notification/', include('notification.api_urls')),
 

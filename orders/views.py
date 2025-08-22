@@ -8,7 +8,6 @@ from .models import Order, OrderItem
 from products.models import Product, Category
 from datetime import datetime, timedelta
 
-
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart = request.session.get('cart', {})
