@@ -1,46 +1,31 @@
 from django.contrib import admin
 from .models import Notification
 
+@admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ('title', 'user', 'notification_type', 'is_read', 'created_at')
-    list_filter = ('is_read', 'created_at', 'notification_type')
-    search_fields = ('user__phone', 'title', 'message')
+    list_display = ('id', 'title', 'user', 'notification_type', 'short_message', 'is_read', 'created_at')
+    list_filter = ('notification_type', 'is_read', 'created_at')
+    search_fields = ('user__phone', 'user__email', 'title', 'message')
     ordering = ('-created_at',)
+    list_select_related = ('user',)
     actions = ['mark_as_read', 'mark_as_unread', 'delete_notifications']
 
     def mark_as_read(self, request, queryset):
-        queryset.update(is_read=True)
-        self.message_user(request, "اعلان‌ها به عنوان خوانده شده علامت‌گذاری شدند.")
-    mark_as_read.short_description = "علامت‌گذاری به عنوان خوانده شده"
-    
+        updated = queryset.update(is_read=True)
+        self.message_user(request, f"{updated} اعلان خوانده شد.")
+
     def mark_as_unread(self, request, queryset):
-        queryset.update(is_read=False)
-        self.message_user(request, "اعلان‌ها به عنوان خوانده نشده علامت‌گذاری شدند.")
-    mark_as_unread.short_description = "علامت‌گذاری به عنوان خوانده نشده"
+        updated = queryset.update(is_read=False)
+        self.message_user(request, f"{updated} اعلان به حالت خوانده‌نشده برگشت.")
 
     def delete_notifications(self, request, queryset):
+        count = queryset.count()
         queryset.delete()
-        self.message_user(request, "اعلان‌ها با موفقیت حذف شدند.")
+        self.message_user(request, f"{count} اعلان حذف شد.")
+
     delete_notifications.short_description = "حذف اعلان‌ها"
 
     def short_message(self, obj):
-        return obj.short_message(50)
-    short_message.short_description = 'پیام'
-
-
-admin.site.register(Notification, NotificationAdmin)
-
-
-
-
-    # def has_view_permission(self, request, obj=None):
-    #     return True
-
-    # def has_module_permission(self, request):
-    #     return True
-
-# class PusherAdmin(admin.ModelAdmin):
-#     list_display = ('user', 'token')
-#     search_fields = ('user__email',)
-
-# admin.site.register(Pusher, PusherAdmin)
+        return obj.message[:50]
+    
+    

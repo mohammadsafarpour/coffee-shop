@@ -6,11 +6,10 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Avg, Exists, OuterRef
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-
 from review.forms import ReviewForm
 from .models import Product
-from orders.models import OrderItem
 from notification.models import Notification
+from orders.models import OrderItem, Order
 
 
 # -----------------------
@@ -31,21 +30,35 @@ class ProductCreateView(CreateView):
     success_url = reverse_lazy('products:product-list')
 
 
+
 class ProductDetailView(DetailView):
     model = Product
     template_name = 'products/product_detail.html'
     context_object_name = 'product'
 
     def get_reviews_qs(self, product):
+
+        delivered = getattr(getattr(Order, 'Status', None), 'DELIVERED', None)
+        if delivered is None:
+            status_list = None
+        elif isinstance(delivered, (list, tuple, set)):
+            status_list = list(delivered)
+        else:
+            status_list = [delivered]
+
+        order_filter = {
+            'order__customer': OuterRef('user'),
+            'product': product,
+        }
+        if status_list:
+            order_filter['order__status__in'] = status_list
+
         return (
             product.reviews.filter(is_approved=True)
             .select_related('user', 'user__profile')
             .annotate(
-                is_verified_buyer=Exists(
-                    OrderItem.objects.filter(
-                        order__customer=OuterRef('user'),
-                        product=product
-                    )
+                verified_buyer=Exists(
+                    OrderItem.objects.filter(**order_filter)
                 )
             )
             .order_by('-created_at')
@@ -61,19 +74,22 @@ class ProductDetailView(DetailView):
         reviews_with_status = [
             {
                 'review': r,
-                'is_owner': is_auth and r.user_id == user.id,
-                'is_verified_buyer': bool(getattr(r, 'is_verified_buyer', False)),
+                'is_owner': is_auth and r.user_id == getattr(user, 'id', None),
+                'is_verified_buyer': bool(getattr(r, 'verified_buyer', False)),
             }
             for r in reviews_qs
         ]
 
         avg_rating = reviews_qs.aggregate(avg=Avg('rating'))['avg'] or 0
+        purchased = is_auth and OrderItem.objects.filter(order__customer=user, product=product).exists()
+        is_fav = is_auth and hasattr(user, 'profile') and user.profile.favorites.filter(pk=product.pk).exists()
+
         context.update({
             'reviews_with_status': reviews_with_status,
             'reviews_count': reviews_qs.count(),
             'average_rating': int(round(avg_rating)) if avg_rating else 0,
-            'is_favorite': is_auth and user.profile.favorites.filter(pk=product.pk).exists(),
-            'has_purchased': is_auth and OrderItem.objects.filter(order__customer=user, product=product).exists(),
+            'is_favorite': is_fav,
+            'has_purchased': purchased,
             'has_reviewed': is_auth and product.reviews.filter(user=user).exists(),
             'review_form': ReviewForm(),
         })
@@ -81,7 +97,6 @@ class ProductDetailView(DetailView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-
         if not request.user.is_authenticated:
             messages.error(request, 'برای ارسال نظر وارد شوید.')
             return redirect(f"/accounts/login/?next={request.path}")
@@ -110,7 +125,8 @@ class ProductDetailView(DetailView):
             )
             messages.success(request, 'نظر شما ثبت شد و برای تأیید ارسال شد.')
 
-        return redirect(self.object.get_absolute_url() if hasattr(self.object, 'get_absolute_url') else request.path)
+        return redirect(self.object.get_absolute_url())
+
 
 
 class ProductCategoryView(ListView):

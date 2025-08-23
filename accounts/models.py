@@ -5,29 +5,30 @@ from products.models import Product
 
 class CustomUserManager(BaseUserManager):
 
-    def create_user(self, phone, email, password=None, **extra_fields):
-        
+    def create_user(self, phone, email=None, password=None, **extra_fields):
         if not phone:
             raise ValueError('برای ثبت‌نام، وارد کردن شماره تلفن الزامی است.')
-        if not email:
-            raise ValueError('برای ثبت‌نام، وارد کردن ایمیل الزامی است.')
-        
-        email = self.normalize_email(email)
+        email = self.normalize_email(email) if email else None
         user = self.model(phone=phone, email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
+
+        # if not email:
+        #     raise ValueError('برای ثبت‌نام، وارد کردن ایمیل الزامی است.')
+
+    email = models.EmailField(unique=True, null=True, blank=True)    
 
     def create_superuser(self, phone, email, password=None, **extra_fields):        
         
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
-
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
+
             
         return self.create_user(phone, email, password, **extra_fields)
 
@@ -68,6 +69,7 @@ class Profile(models.Model):
             return f"پروفایل {self.user.first_name} {self.user.last_name}"
         except AttributeError:
             return "پروفایل خالی"
+
 
 def create_user_profile(sender, instance, created, **kwargs):
 
