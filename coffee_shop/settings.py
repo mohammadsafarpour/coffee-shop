@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "notification.apps.NotificationConfig",
     'django_extensions',
     'rest_framework',
+    'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'drf_yasg',
     'django_filters',
@@ -123,7 +124,7 @@ LANGUAGE_CODE = 'fa-ir'
 TIME_ZONE = 'Asia/Tehran'
 USE_I18N = True
 USE_L10N = True
-USE_TZ = True
+# USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
@@ -148,7 +149,6 @@ EMAIL_HOST_PASSWORD = "wfvrrxkrsmqkfgku"
 DEFAULT_FROM_EMAIL = "U0F6D@example.com"
 EMAIL_USE_TLS = True
 
-KAVENEGAR_API_KEY = '316E6E44372F773869374333634231505146654A75527A72444E55384E5245696D5A556A534E64657A68733D'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -160,16 +160,12 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 SANDBOX = True 
 MERCHANT_ID = 'a0000000-0000-0000-0000-000000000000'
 
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "change-me")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+KAVENEGAR_API_KEY = os.getenv("KAVENEGAR_API_KEY")
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': (
-#         'rest_framework_simplejwt.authentication.JWTAuthentication',
-#     ),
-#     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-#     'PAGE_SIZE': 10, 
-# }
-
-# in settings.py
+KAVENEGAR_API_KEY = '316E6E44372F773869374333634231505146654A75527A72444E55384E5245696D5A556A534E64657A68733D'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -180,3 +176,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10, 
 }
+
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+
+# CELERY_BROKER_URL = 'redis://localhost:6379'
+# CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+# CELERY_ACCEPT_CONTENT = ['application/json']
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'

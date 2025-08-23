@@ -57,7 +57,7 @@
                                     <img src="{% if review.user.profile.avatar %}{{ review.user.profile.avatar.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" alt="avatar" class="w-10 h-10 rounded-full ml-4 object-cover">
                                     <div>
                                         <span class="font-bold text-amber-400">{{ review.user.profile.first_name|default:review.user.phone }}</span>
-                                        {% if review.is_verified_buyer %}
+                                        {% if review.verified_buyer %}
                                             <span class="badge badge-success mr-1 text-xs">خریدار تأیید شده</span>
                                         {% endif %}
                                         <p class="text-xs text-gray-400">{{ review.created_at|date:"Y/m/d - H:i" }}</p>

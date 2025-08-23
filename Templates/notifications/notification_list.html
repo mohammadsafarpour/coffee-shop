@@ -10,14 +10,14 @@
     <div class="glass-card rounded-2xl p-6">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-semibold text-white">
-                تعداد اعلان‌ها: <span class="text-amber-400">{{ notifications.count }}</span>
+                تعداد اعلان‌ها: <span class="text-amber-400">{{ total_count }}</span>
             </h2>
-            {% if notifications %}
+            {% if total_count %}
             <form action="{% url 'notification:clear-all-notifications' %}" method="post">
                 {% csrf_token %}
                 <button type="submit" class="text-red-500 hover:text-red-400 text-sm font-semibold flex items-center">
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1 1v3M4 7h16"></path>
                     </svg>
                     حذف همه
                 </button>
@@ -45,7 +45,9 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"></path>
                                     </svg>
                                     {% endif %}
-                                    <h3 class="text-lg font-semibold text-white">{{ note.title }}</h3>
+                                    <a href="{% url 'notification:notification-detail' note.id %}" class="hover:underline">
+                                        <h3 class="text-lg font-semibold text-white">{{ note.title }}</h3>
+                                    </a>
                                 </div>
                                 <p class="text-gray-300 text-sm mt-1">{{ note.message }}</p>
                             </div>
@@ -59,12 +61,19 @@
                                             </svg>
                                         </button>
                                     </form>
+                                {% else %}
+                                    <form action="{% url 'notification:mark-notification-as-unread' note.id %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-xs text-gray-400 hover:underline" title="خوانده‌نشده">
+                                            علامت‌گذاری خوانده‌نشده
+                                        </button>
+                                    </form>
                                 {% endif %}
                                 <form action="{% url 'notification:delete-notification' note.id %}" method="post">
                                     {% csrf_token %}
                                     <button type="submit" class="text-xs text-red-400 hover:text-red-300" title="حذف">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1 1v3M4 7h16"></path>
                                         </svg>
                                     </button>
                                 </form>
@@ -74,6 +83,18 @@
                     </li>
                 {% endfor %}
             </ul>
+
+            {% if notifications.has_other_pages %}
+            <div class="flex justify-center items-center gap-2 mt-6">
+                {% if notifications.has_previous %}
+                    <a class="px-3 py-1 rounded bg-gray-700 hover:bg-gray-600" href="?page={{ notifications.previous_page_number }}">قبلی</a>
+                {% endif %}
+                <span class="px-3 py-1 rounded bg-gray-800">{{ notifications.number }} / {{ notifications.paginator.num_pages }}</span>
+                {% if notifications.has_next %}
+                    <a class="px-3 py-1 rounded bg-gray-700 hover:bg-gray-600" href="?page={{ notifications.next_page_number }}">بعدی</a>
+                {% endif %}
+            </div>
+            {% endif %}
         {% else %}
             <div class="text-center py-16">
                 <svg class="w-16 h-16 mx-auto text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

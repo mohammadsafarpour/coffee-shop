@@ -5,8 +5,6 @@ from .api_views import CustomUserViewSet, CustomAuthToken, CustomAuthTokenView
 router = routers.DefaultRouter()
 router.register(r'users', CustomUserViewSet, basename='users')
 
-
-
 urlpatterns = [
     path('', include(router.urls)),
     path('api-token-auth/', CustomAuthToken.as_view(), name='api-token-auth'),

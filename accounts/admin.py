@@ -37,14 +37,12 @@ class CustomUserAdmin(UserAdmin):
     )
 
     add_fieldsets = (
-        (
-            None,
-            {
-                "classes": ("wide",),
-                "fields": ("phone", "email", "password", "password2"),
-            },
-        ),
+        (None, {
+            "classes": ("wide",),
+            "fields": ("phone", "email", "password1", "password2"),
+        }),
     )
+
     
     filter_horizontal = ("groups", "user_permissions",)
 

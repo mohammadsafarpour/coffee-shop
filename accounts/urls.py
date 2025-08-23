@@ -9,5 +9,5 @@ urlpatterns = [
     path('profile/<int:user_id>/favorites/', ProfileFavoritesView.as_view(), name='profile-favorites'),
     path('profile/<int:user_id>/notifications/', ProfileNotificationsView.as_view(), name='profile-notifications'),
     path('profile/<int:user_id>/remove-favorite/<int:product_id>/', ProfileRemoveFavoriteView.as_view(), name='remove-from-favorites'),
-
+    
 ]
