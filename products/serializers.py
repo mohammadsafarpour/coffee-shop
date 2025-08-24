@@ -120,8 +120,10 @@
 #         return instance
 
 #============================= second one ==============================
-
+from drf_spectacular.utils import extend_schema_field
+from drf_spectacular.types import OpenApiTypes
 from rest_framework import serializers
+
 from .models import Product, Category, ProductImage, Ingredient
 
 # -----------------------------
@@ -190,4 +192,39 @@ class ProductSerializer(serializers.ModelSerializer):
         instance = super().update(instance, validated_data)
         if ingredients_data is not None:
             self._handle_ingredients(instance, ingredients_data)
+        return instance
+    
+# -----------------------------
+#   Product WRITE Serializer
+# -----------------------------
+class ProductWriteSerializer(serializers.ModelSerializer):
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all(),
+        required=False,
+    )
+
+    image = serializers.ImageField(required=False)
+    ingredients = IngredientSerializer(many=True, required=False)
+    name = serializers.CharField(required=False)
+    price = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
+    stock = serializers.IntegerField(required=False)
+    description = serializers.CharField(required=False)
+    is_active = serializers.BooleanField(required=False)
+
+    class Meta:
+        model = Product
+        fields = [
+            'name', 'description', 'price', 'stock', 'is_active', 
+            'category', 'image', 'ingredients'
+        ]
+    
+    def update(self, instance, validated_data):
+        ingredients_data = validated_data.pop('ingredients', None)
+        if ingredients_data is not None:
+            instance.ingredients.all().delete()
+            for ingredient_data in ingredients_data:
+                Ingredient.objects.create(product=instance, **ingredient_data)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
         return instance
