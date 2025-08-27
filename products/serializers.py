@@ -149,7 +149,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
-        fields = ['id', 'image', 'alt_text']
+        fields = ['id', 'product','image', 'alt_text']
 
 # -----------------------------
 #   Product Serializer
@@ -228,3 +228,15 @@ class ProductWriteSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
         instance.save()
         return instance
+
+# ----------------------------------
+#   Product Image WRITE Serializer
+# ----------------------------------
+class ProductImageWriteSerializer(serializers.ModelSerializer):
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+    image = serializers.ImageField()
+    alt_text = serializers.CharField(required=False, allow_blank=True)
+
+    class Meta:
+        model = ProductImage
+        fields = ['product', 'image', 'alt_text']
