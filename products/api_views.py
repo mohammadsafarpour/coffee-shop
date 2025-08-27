@@ -84,6 +84,7 @@ from .serializers import (
     ProductWriteSerializer, 
     CategorySerializer, 
     ProductImageSerializer,
+    ProductImageWriteSerializer,
     IngredientSerializer
 )
 
@@ -222,7 +223,59 @@ class Api_ProductImageViewSet(viewsets.ModelViewSet):
     queryset = ProductImage.objects.all()
     serializer_class = ProductImageSerializer
     permission_classes = [IsAdminUserOrReadOnly]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
+    @extend_schema(
+        request={
+            'multipart/form-data': {
+                'type': 'object',
+                'properties': {
+                    'product': {'type': 'integer'},
+                    'image': {'type': 'string', 'format': 'binary'},
+                    'alt_text': {'type': 'string'}
+                },
+                'required': ['product', 'image']
+            }
+        },
+        responses={201: ProductImageSerializer}
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @extend_schema(
+        request={
+            'multipart/form-data': {
+                'type': 'object',
+                'properties': {
+                    'product': {'type': 'integer'},
+                    'image': {'type': 'string', 'format': 'binary'},
+                    'alt_text': {'type': 'string'}
+                },
+                'required': ['product', 'image']
+            }
+        },
+        responses={201: ProductImageSerializer}
+    )
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    @extend_schema(
+                request={
+            'multipart/form-data': {
+                'type': 'object',
+                'properties': {
+                    'product': {'type': 'integer'},
+                    'image': {'type': 'string', 'format': 'binary'},
+                    'alt_text': {'type': 'string'}
+                },
+                'required': ['product', 'image']
+            }
+        },
+        responses={201: ProductImageSerializer}
+    )
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+    
 class Api_IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
