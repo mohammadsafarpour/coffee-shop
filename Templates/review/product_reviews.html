@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}نظرات محصول: {{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="glass-card p-8 rounded-2xl">
+        <div class="flex items-center gap-4 mb-8">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-20 h-20 object-cover rounded-lg">
+            {% endif %}
+            <div>
+                <p class="text-sm text-gray-400">نظرات برای محصول:</p>
+                <h2 class="text-3xl font-bold text-amber-400">{{ product.name }}</h2>
+            </div>
+        </div>
+
+        {% if user.is_authenticated %}
+            <form action="{% url 'review:add_review' product.id %}" method="post" class="mb-10 bg-gray-800 bg-opacity-40 p-6 rounded-lg">
+                {% csrf_token %}
+                <h3 class="text-xl font-semibold text-white mb-4">نظر خود را ثبت کنید</h3>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-300 mb-2">امتیاز شما:</label>
+                    <!-- Fix 1: Add the class 'star-rating-container' to the div -->
+                    <div id="star-rating" class="star-rating-container flex flex-row-reverse justify-end items-center" data-rating="0">
+                        {% for i in "54321" %}
+                        <!-- Fix 2: Correct the xmlns attribute by removing the square brackets -->
+                        <svg class="star w-8 h-8 cursor-pointer text-gray-500 hover:text-amber-400 transition-colors" data-value="{{ i }}" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {{ form.text.label_tag }}
+                {{ form.text }}
+                {{ form.rating }}
+
+                <button type="submit" class="mt-4 bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-2 px-6 rounded-lg transition">ارسال نظر</button>
+            </form>
+        {% else %}
+            <p class="mb-10 text-gray-400 text-center bg-gray-800 bg-opacity-40 p-6 rounded-lg">
+                برای ثبت نظر لطفاً <a href="{% url 'login' %}" class="text-amber-400 underline">وارد شوید</a>.
+            </p>
+        {% endif %}
+
+        <div>
+            <h3 class="text-2xl font-semibold text-white mb-4">نظرات کاربران ({{ reviews.count }})</h3>
+            {% if reviews %}
+                <ul class="space-y-6">
+                    {% for review in reviews %}
+                        <li class="bg-gray-800 bg-opacity-40 p-5 rounded-lg">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-center mb-3">
+                                    <img src="{% if review.user.profile.avatar %}{{ review.user.profile.avatar.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" alt="avatar" class="w-10 h-10 rounded-full ml-4 object-cover">
+                                    <div>
+                                        <span class="font-bold text-amber-400">{{ review.user.profile.first_name|default:review.user.phone }}</span>
+                                        {% if review.verified_buyer %}
+                                            <span class="badge badge-success mr-1 text-xs">خریدار تأیید شده</span>
+                                        {% endif %}
+                                        <p class="text-xs text-gray-400">{{ review.created_at|date:"Y/m/d - H:i" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-200 leading-relaxed">{{ review.text|linebreaks }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-400 text-center py-8">هنوز هیچ نظری برای این محصول ثبت نشده است. اولین نفر باشید!</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// The JavaScript code remains the same as you provided, as it should work correctly now
+// with the fixes applied to the HTML structure.
+document.addEventListener('DOMContentLoaded', function () {
+    const starElements = document.querySelectorAll('.star');
+    const ratingInputElement = document.querySelector('input[name="rating"]');
+    // This selector now correctly finds the div with the added class
+    const ratingContainer = document.querySelector('.star-rating-container');
+
+    if (!starElements.length || !ratingInputElement || !ratingContainer) {
+        console.warn('Required star rating elements not found.');
+        return;
+    }
+
+    let currentRating = parseInt(ratingInputElement.value, 10) || 0;
+    const maxRating = starElements.length; // Assumes stars represent 1 to N
+
+    // Set initial ARIA attributes
+    ratingContainer.setAttribute('role', 'radiogroup');
+    ratingContainer.setAttribute('aria-label', 'Product Rating'); // Provide a label
+    starElements.forEach((star, index) => {
+        const value = parseInt(star.dataset.value, 10);
+        star.setAttribute('role', 'radio');
+        star.setAttribute('aria-checked', value === currentRating);
+        star.setAttribute('aria-posinset', index + 1);
+        star.setAttribute('aria-setsize', maxRating);
+        star.setAttribute('tabindex', value === currentRating ? '0' : '-1'); // Make current/first focusable
+         // Add title for tooltip (optional)
+         star.setAttribute('title', `${value} out of ${maxRating} stars`);
+    });
+
+    function updateStarDisplay(rating) {
+        starElements.forEach(star => {
+            const starValue = parseInt(star.dataset.value, 10);
+            const isFilled = starValue <= rating;
+
+            star.classList.toggle('text-amber-400', isFilled);
+            star.classList.toggle('text-gray-500', !isFilled);
+
+            // Update ARIA attributes
+            star.setAttribute('aria-checked', isFilled && starValue === rating); // Only the last one is "selected"
+             // Update tabindex for keyboard navigation (simplified: only current is 0)
+             // A more robust version would manage focus order
+             // star.setAttribute('tabindex', starValue === rating ? '0' : '-1');
+        });
+         // Update input value
+        ratingInputElement.value = rating;
+        // Update container's aria-activedescendant if needed (advanced)
+    }
+
+    function setRating(newRating) {
+        if (!isNaN(newRating) && newRating >= 0 && newRating <= maxRating) {
+            currentRating = newRating;
+            updateStarDisplay(currentRating);
+             // Announce change to screen reader (optional)
+             // ratingInputElement.dispatchEvent(new Event('change')); // Or use ARIA live regions
+        }
+    }
+
+    starElements.forEach(star => {
+        star.addEventListener('click', function () {
+            const clickedValue = parseInt(this.dataset.value, 10);
+            setRating(clickedValue);
+        });
+
+        // Basic keyboard support (Space/Enter to select)
+        star.addEventListener('keydown', function(e) {
+             if (e.key === 'Enter' || e.key === ' ') {
+                 e.preventDefault(); // Prevent scrolling/page action
+                 const keyValue = parseInt(this.dataset.value, 10);
+                 setRating(keyValue);
+             }
+             // Add arrow key navigation if desired (more complex)
+        });
+
+        // Hover effect (from Version 2)
+        star.addEventListener('mouseenter', function() {
+            const hoverValue = parseInt(this.dataset.value, 10);
+            if (!isNaN(hoverValue)) {
+                updateStarDisplay(hoverValue);
+            }
+        });
+    });
+
+    // Reset on mouse leave (from Version 2)
+    ratingContainer.addEventListener('mouseleave', function() {
+        updateStarDisplay(currentRating);
+    });
+});
+</script>
+{% endblock %}

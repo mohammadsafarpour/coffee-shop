@@ -1,9 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Logged out{% endblock %}
+
+{% block title %}خروج موفق{% endblock %}
+
 {% block content %}
-<div style="text-align:center; margin-top:50px;">
-    <h1 style="color:#4CAF50;">شما با موفقیت خارج شدید</h1>
-    <p style="font-size:18px;">امیدواریم دوباره شما را ببینیم. برای ورود مجدد روی دکمه زیر کلیک کنید:</p>
-    <a href="{% url 'login' %}" style="display:inline-block; padding:10px 25px; background:#4CAF50; color:#fff; border-radius:5px; text-decoration:none; font-size:16px; margin-top:20px;">ورود مجدد</a>
+<div class="flex justify-center items-center py-20">
+    <div class="w-full max-w-lg text-center glass-card rounded-2xl p-10">
+        <h1 class="text-3xl font-bold text-green-400 mb-4">شما با موفقیت خارج شدید</h1>
+        <p class="text-gray-300 text-lg mb-8">امیدواریم دوباره شما را ببینیم.</p>
+        <a href="{% url 'login' %}" class="inline-block bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-3 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105">
+            ورود مجدد
+        </a>
+    </div>
 </div>
 {% endblock %}
