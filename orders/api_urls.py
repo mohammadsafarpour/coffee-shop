@@ -1,21 +1,10 @@
-# from rest_framework.routers import DefaultRouter
-# from .api_views import OrderHistoryViewset
-
-# router = DefaultRouter()
-# router.register('history', OrderHistoryViewset, basename='order-history')
-# urlpatterns = router.urls
-
-# By normal url: 
-# from django.urls import path
-# from .views import OrderHistoryAPIView
-
-# urlpatterns = [
-#     path('history/', OrderHistoryAPIView.as_view(), name='order-history-api'),
-# ]
-
+from django.urls import path
 from rest_framework.routers import DefaultRouter
-from .api_views import OrderHistoryViewSet
+from .api_views import CartViewSet, OrderViewSet
 
 router = DefaultRouter()
-router.register('history', OrderHistoryViewSet, basename='order-history')
-urlpatterns = router.urls
+router.register('cart', CartViewSet, basename='cart')
+router.register('orders', OrderViewSet, basename='order')
+
+urlpatterns = [
+] + router.urls
