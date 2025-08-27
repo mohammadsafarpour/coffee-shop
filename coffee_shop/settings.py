@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
-    'drf_yasg',
+    # 'drf_yasg',
+    'drf_spectacular',
     'django_filters',
 ]
 
@@ -168,6 +169,7 @@ KAVENEGAR_API_KEY = os.getenv("KAVENEGAR_API_KEY")
 KAVENEGAR_API_KEY = '316E6E44372F773869374333634231505146654A75527A72444E55384E5245696D5A556A534E64657A68733D'
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
@@ -184,3 +186,34 @@ SESSION_ENGINE = "django.contrib.sessions.backends.db"
 # CELERY_ACCEPT_CONTENT = ['application/json']
 # CELERY_TASK_SERIALIZER = 'json'
 # CELERY_RESULT_SERIALIZER = 'json'
+
+# DRF-YASG SETTINGS FOR SWAGGER
+# SWAGGER_SETTINGS = {
+#    'SECURITY_DEFINITIONS': {
+#       'Token': {
+#             'type': 'apiKey',
+#             'in': 'header',
+#             'name': 'Authorization',
+#             'description': "توکن خود را با پیشوند 'Token' وارد کنید. مثال: 'Token 12345abcdef...'"
+#       }
+#    }
+# }
+
+# DRF-SPECTACULAR SETTINGS FOR SWAGGER
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Coffee Shop API (Spectacular)',
+    'DESCRIPTION': 'مستندات کامل و هوشمند API برای پروژه کافه با استفاده از Spectacular',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SCHEMAS': {
+        'securitySchemes': {
+            'tokenAuth': {
+                'type': 'apiKey',
+                'in': 'header',
+                'name': 'Authorization',
+                'description': "توکن خود را با پیشوند 'Token' وارد کنید. مثال: 'Token 12345abcdef...'"
+            }
+        }
+    },
+    'SECURITY': [{'tokenAuth': []}]
+}

@@ -20,36 +20,50 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView
-from products.views import ProductListView, ProductCreateView
+from products.views import ProductCreateView #,ProductListView
 
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
-from rest_framework import permissions
+# from drf_yasg.views import get_schema_view
+# from drf_yasg import openapi
+# from rest_framework import permissions
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
-schema_view = get_schema_view(
-   openapi.Info(
-      title="Coffee Shop API",
-      default_version='v1',
-      description="مستندات API برای پروژه کافه",
-      contact=openapi.Contact(email="contact@tamizcafe.local"),
-      license=openapi.License(name="MIT License"),
-   ),
-   public=True,
-   permission_classes=(permissions.AllowAny,),
-)
+# security_definitions = {
+#     'Token': {
+#         'type': 'apiKey',
+#         'in': 'header',
+#         'name': 'Authorization'
+#     }
+# }
+
+# schema_view = get_schema_view(
+#    openapi.Info(
+#       title="Coffee Shop API",
+#       default_version='v1',
+#       description="مستندات API برای پروژه کافه",
+#       contact=openapi.Contact(email="contact@tamizcafe.local"),
+#       license=openapi.License(name="MIT License"),
+#    ),
+#    public=True,
+#    permission_classes=(permissions.AllowAny,),
+# )
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('api/v1/accounts/', include('accounts.api_urls')),
+    path('api/v1/', include('accounts.api_urls')),
     path('api/v1/', include('products.api_urls')),
-    path('api/v1/orders/', include('orders.api_urls')),
+    path('api/v1/', include('orders.api_urls')),
     # path('api/v1/review/', include('review.api_urls')),
     # path('api/v1/notification/', include('notification.api_urls')),
 
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    # path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    # path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+
+    path('api/v1/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/v1/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/v1/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+
 
     path('', TemplateView.as_view(template_name='base.html'), name='home'),
     path('accounts/login/',auth_views.LoginView.as_view(template_name='accounts/login.html'),name='login'),
