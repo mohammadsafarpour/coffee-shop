@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from products.serializers import ProductSerializer
-from accounts.serializers import CustomUserSerializer
+from accounts.serializers import UserSerializer 
 from .models import Order, OrderItem
 from products.models import Product
 
@@ -14,7 +14,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     order_items = OrderItemSerializer(many=True, read_only=True)
-    customer = CustomUserSerializer(read_only=True)
+    customer = UserSerializer(read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     total_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
 
