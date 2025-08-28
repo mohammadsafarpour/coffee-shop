@@ -14,14 +14,14 @@ from .models import Profile, OTPRequest
 from .serializers import (
     UserSerializer, RegisterSerializer, ProfileSerializer, ProfileFavoritesSerializer,
     OTPRequestSerializer, OTPVerifyRegisterSerializer, UserManagementSerializer,
-    PhonePasswordSerializer, PhoneOTPSerializer
+    PhonePasswordSerializer, PhoneOTPSerializer, ProductIdSerializer
 )
 
 CustomUser = get_user_model()
 
 class AuthViewSet(viewsets.GenericViewSet):
     permission_classes = [AllowAny]
-    parser_classes = [JSONParser]
+    parser_classes = [JSONParser, FormParser, MultiPartParser]
 
     def get_serializer_class(self):
         if self.action == 'request_otp':
@@ -29,8 +29,12 @@ class AuthViewSet(viewsets.GenericViewSet):
         elif self.action == 'verify_and_register':
             return OTPVerifyRegisterSerializer
         return serializers.Serializer
+    
+    @extend_schema(
+        request=OTPRequestSerializer,
+        summary="OTP First Step : Code submitting"
+    )
 
-    @extend_schema(request=OTPRequestSerializer, summary="مرحله ۱ ثبت‌نام: درخواست OTP")
     @action(detail=False, methods=['post'], url_path='register/request-otp')
     def request_otp(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -45,7 +49,11 @@ class AuthViewSet(viewsets.GenericViewSet):
         print(f"DEBUG: Registration OTP for {phone} is {otp_code}")
         return Response({'detail': 'کد تایید با موفقیت به شماره شما ارسال شد.'}, status=status.HTTP_200_OK)
     
-    @extend_schema(request=OTPVerifyRegisterSerializer, summary="مرحله ۲ ثبت‌نام: تایید OTP و ایجاد حساب")
+    @extend_schema(
+        request=OTPVerifyRegisterSerializer,
+        summary="OTP Second Step : Code Verification"
+    )
+
     @action(detail=False, methods=['post'], url_path='register/verify')
     def verify_and_register(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -76,9 +84,9 @@ class AuthViewSet(viewsets.GenericViewSet):
 
 class LoginOTPViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
-    parser_classes = [JSONParser]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
-    @extend_schema(request=PhonePasswordSerializer, summary="مرحله ۱ لاگین: درخواست OTP با رمز عبور")
+    @extend_schema(request=PhonePasswordSerializer, summary="OTP First Step : Code submitting ")
     @action(detail=False, methods=['post'], url_path='request')
     def request_otp(self, request):
         serializer = PhonePasswordSerializer(data=request.data)
@@ -98,7 +106,7 @@ class LoginOTPViewSet(viewsets.ViewSet):
             return Response({'detail': 'کد تایید با موفقیت به شماره شما ارسال شد.'}, status=status.HTTP_200_OK)
         return Response({'error': 'شماره تلفن یا رمز عبور نامعتبر است.'}, status=status.HTTP_401_UNAUTHORIZED)
     
-    @extend_schema(request=PhoneOTPSerializer, summary="مرحله ۲ لاگین: تایید OTP و دریافت توکن")
+    @extend_schema(request=PhoneOTPSerializer, summary="OTP Second Step : Code Verification")
     @action(detail=False, methods=['post'], url_path='verify')
     def verify_otp(self, request):
         serializer = PhoneOTPSerializer(data=request.data)
@@ -134,6 +142,19 @@ class ProfileViewSet(viewsets.ViewSet):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
 
+    @extend_schema(
+        request={
+            'multipart/form-data': {
+                'type': 'object',
+                'properties': {
+                    'first_name': {'type': 'string'},
+                    'last_name': {'type': 'string'},
+                    'avatar': {'type': 'string', 'format': 'binary'}
+                }
+            }
+        },
+        responses={200: UserSerializer}
+    )
     @extend_schema(request=ProfileSerializer, responses=UserSerializer)
     @action(detail=False, methods=['patch'], url_path='me/update')
     def update_my_profile(self, request):
@@ -149,6 +170,11 @@ class ProfileViewSet(viewsets.ViewSet):
     def view_my_favorites(self, request):
         serializer = ProfileFavoritesSerializer(request.user.profile)
         return Response(serializer.data)
+    
+    @extend_schema(
+        request=ProductIdSerializer,
+        summary="Add Favorite Product"
+    )
 
     @action(detail=False, methods=['post'], url_path='me/favorites/add')
     def add_favorite(self, request):
@@ -159,6 +185,11 @@ class ProfileViewSet(viewsets.ViewSet):
         product = get_object_or_404(Product, pk=product_id)
         request.user.profile.favorites.add(product)
         return Response({'status': 'added to favorites'}, status=status.HTTP_200_OK)
+    
+    @extend_schema(
+        request=ProductIdSerializer,
+        summary="Remove Favorite Product"
+    )
         
     @action(detail=False, methods=['post'], url_path='me/favorites/remove')
     def remove_favorite(self, request):
@@ -176,7 +207,20 @@ class UserManagementViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
-    @extend_schema(request={'multipart/form-data': ProfileSerializer})
+    @extend_schema(
+        request={
+            'multipart/form-data': {
+                'type': 'object',
+                'properties': {
+                    'first_name': {'type': 'string'},
+                    'last_name': {'type': 'string'},
+                    'avatar': {'type': 'string', 'format': 'binary'}
+                }
+            }
+        },
+        responses={200: UserManagementSerializer}
+    )
+
     @action(detail=True, methods=['patch'], url_path='update-profile')
     def update_user_profile(self, request, pk=None):
         user = self.get_object()
