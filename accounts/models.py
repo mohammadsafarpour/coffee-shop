@@ -53,6 +53,8 @@ class Profile(models.Model):
     last_name = models.CharField(max_length=100, blank=True, null=True)
     avatar = models.ImageField(upload_to="profiles/avatars/", null=True, blank=True)
     favorites = models.ManyToManyField(Product, related_name="user_favorites", blank=True, verbose_name="علاقه‌مندی‌ها")
+    otp_secret = models.CharField(max_length=32, blank=True, null=True)
+    otp_created_at = models.DateTimeField(blank=True, null=True)    
 
     class Meta:
         verbose_name = 'پروفایل'
@@ -88,3 +90,11 @@ post_save.connect(create_user_profile, sender=CustomUser)
 # @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 # def save_user_profile(sender, instance, **kwargs):
 #     instance.profile.save()
+
+class OTPRequest(models.Model):
+    phone = models.CharField(max_length=11)
+    otp_secret = models.CharField(max_length=32) # کلید مخفی برای تولید و تایید OTP
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"OTP request for {self.phone}"
