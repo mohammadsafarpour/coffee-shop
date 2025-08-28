@@ -87,3 +87,6 @@ class UserManagementSerializer(serializers.ModelSerializer):
                 setattr(profile, attr, value)
             profile.save()  
         return instance
+
+class ProductIdSerializer(serializers.Serializer):
+    product_id = serializers.IntegerField()

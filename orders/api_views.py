@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from drf_spectacular.utils import extend_schema
-from rest_framework.parsers import JSONParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from products.models import Product
 from .models import Order, OrderItem
 from .serializers import (
@@ -16,7 +16,7 @@ from .serializers import (
 
 class CartViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
-    parser_classes = [JSONParser]
+    parser_classes = [JSONParser, FormParser, MultiPartParser]
 
     def get_cart(self, user):
         cart, created = Order.objects.get_or_create(customer=user, is_paid=False)
