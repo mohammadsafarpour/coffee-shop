@@ -1,10 +1,7 @@
 from rest_framework import serializers
-
 from django.contrib.auth import get_user_model
-
 from .models import Profile
-
-from products.serializers import ProductSerializer # فرض می‌کنیم این سریالایزر در اپ محصولات وجود دارد
+from products.serializers import ProductSerializer
 
 CustomUser = get_user_model()
 
@@ -14,12 +11,11 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ['first_name', 'last_name', 'avatar']
 
 class UserSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer()
+    profile = ProfileSerializer(read_only=True)
 
     class Meta:
         model = CustomUser
         fields = ['id', 'phone', 'email', 'profile']
-        read_only_fields = ['phone']
 
 class RegisterSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(required=False)
