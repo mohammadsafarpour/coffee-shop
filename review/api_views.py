@@ -168,23 +168,23 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        review = serializer.save(user=self.request.user)
+        serializer.save()
         
-        try:
-            from django.contrib.auth import get_user_model
-            User = get_user_model()
-            managers = User.objects.filter(is_staff=True)
+        # try:
+        #     from django.contrib.auth import get_user_model
+        #     User = get_user_model()
+        #     managers = User.objects.filter(is_staff=True)
             
-            for admin in managers:
-                Notification.objects.create(
-                    user=admin,
-                    title='نظر جدید ثبت شد',
-                    message=f'نظر جدید برای محصول "{review.product.name}" توسط {review.user} ثبت شد.',
-                    notification_type='review',
-                    content_object=review
-                )
-        except Exception:
-            pass
+        #     for admin in managers:
+        #         Notification.objects.create(
+        #             user=admin,
+        #             title='نظر جدید ثبت شد',
+        #             message=f'نظر جدید برای محصول "{review.product.name}" توسط {review.user} ثبت شد.',
+        #             notification_type='review',
+        #             content_object=review
+        #         )
+        # except Exception:
+        #     pass
         
 @extend_schema(
     methods=['get'],
