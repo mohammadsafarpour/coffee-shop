@@ -27,5 +27,3 @@ class NotificationAdmin(admin.ModelAdmin):
 
     def short_message(self, obj):
         return obj.message[:50]
-    
-    

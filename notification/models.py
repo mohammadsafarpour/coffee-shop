@@ -46,6 +46,7 @@ class Notification(models.Model):
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     is_read = models.BooleanField(default=False, db_index=True)
+    updated_at = models.DateTimeField(auto_now=True)
     notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES, default='system', db_index=True)
 
     target_url = models.URLField(blank=True, null=True)
