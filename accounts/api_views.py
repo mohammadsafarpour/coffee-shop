@@ -1,14 +1,19 @@
 import pyotp
 from django.utils import timezone
+
 from django.contrib.auth import get_user_model, authenticate
 from django.shortcuts import get_object_or_404
+
 from rest_framework import viewsets, status, serializers
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.decorators import action
-from rest_framework.authtoken.models import Token
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from drf_spectacular.utils import extend_schema
+from rest_framework.authtoken.models import Token
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 from products.models import Product
 from .models import Profile, OTPRequest
 from .serializers import (
@@ -243,3 +248,26 @@ class UserManagementViewSet(viewsets.ModelViewSet):
         user.is_staff = False
         user.save()
         return Response(self.get_serializer(user).data)
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['phone'] = user.phone
+        token['email'] = user.email
+        return token
+
+    def validate(self, attrs):
+        user = authenticate(
+            request=self.context.get('request'), 
+            username=attrs.get('phone'),
+            password=attrs.get('password')
+        )
+
+        if not user:
+            raise serializers.ValidationError('شماره تلفن یا رمز عبور نامعتبر است.')
+        self.user = user
+        return super().validate(attrs)
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer

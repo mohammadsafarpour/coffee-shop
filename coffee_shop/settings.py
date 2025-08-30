@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 
 import os
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -203,18 +204,61 @@ SESSION_ENGINE = "django.contrib.sessions.backends.db"
 # DRF-SPECTACULAR SETTINGS FOR SWAGGER
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Coffee Shop API (Spectacular)',
-    'DESCRIPTION': 'مستندات کامل و هوشمند API برای پروژه کافه با استفاده از Spectacular',
+    'DESCRIPTION': 'مستندات کامل و هوشمند API برای پروژه کافه',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    'COMPONENT_SCHEMAS': {
+    
+    'COMPONENTS': {
         'securitySchemes': {
-            'tokenAuth': {
+            'BearerAuth': {
+                'type': 'http',
+                'scheme': 'bearer',
+                'bearerFormat': 'JWT',
+                'description': "توکن JWT خود را (بدون پیشوند) وارد کنید. این روش پیشنهادی است."
+            },
+            'TokenAuth': {
                 'type': 'apiKey',
                 'in': 'header',
                 'name': 'Authorization',
-                'description': "توکن خود را با پیشوند 'Token' وارد کنید. مثال: 'Token 12345abcdef...'"
+                'description': "توکن خود را با پیشوند 'Token' وارد کنید. مثال: 'Token 9944b09...'"
             }
         }
     },
-    'SECURITY': [{'tokenAuth': []}]
+    'SECURITY': [
+        {'BearerAuth': []},
+        {'TokenAuth': []}
+    ]
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "UPDATE_LAST_LOGIN": False,
+
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "VERIFYING_KEY": "",
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JSON_ENCODER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
+
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
+
+    "JTI_CLAIM": "jti",
+
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
