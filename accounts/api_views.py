@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model, authenticate
 from django.shortcuts import get_object_or_404
 
+from rest_framework.views import APIView
 from rest_framework import viewsets, status, serializers
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
@@ -11,15 +12,16 @@ from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from drf_spectacular.utils import extend_schema
 from rest_framework.authtoken.models import Token
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 
 from products.models import Product
 from .models import Profile, OTPRequest
 from .serializers import (
     UserSerializer, RegisterSerializer, ProfileSerializer, ProfileFavoritesSerializer,
     OTPRequestSerializer, OTPVerifyRegisterSerializer, UserManagementSerializer,
-    PhonePasswordSerializer, PhoneOTPSerializer, ProductIdSerializer
+    PhonePasswordSerializer, PhoneOTPSerializer, ProductIdSerializer, JWTLoginSerializer
 )
 
 CustomUser = get_user_model()
@@ -249,25 +251,34 @@ class UserManagementViewSet(viewsets.ModelViewSet):
         user.save()
         return Response(self.get_serializer(user).data)
 
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-        token['phone'] = user.phone
-        token['email'] = user.email
-        return token
+class JWTLoginView(APIView):
+    permission_classes = [AllowAny]
+    serializer_class = JWTLoginSerializer
 
-    def validate(self, attrs):
-        user = authenticate(
-            request=self.context.get('request'), 
-            username=attrs.get('phone'),
-            password=attrs.get('password')
-        )
+    @extend_schema(
+        request=JWTLoginSerializer,
+        summary="Login with phone and password to get JWT tokens"
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        phone = serializer.validated_data['phone']
+        password = serializer.validated_data['password']
+        
+        user = authenticate(username=phone, password=password)
+        
+        if user is not None:
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            })    
+        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        if not user:
-            raise serializers.ValidationError('شماره تلفن یا رمز عبور نامعتبر است.')
-        self.user = user
-        return super().validate(attrs)
-
-class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
+@extend_schema(
+    request=TokenRefreshSerializer,
+    summary="Refresh Access Token"
+)
+class DecoratedTokenRefreshView(TokenRefreshView):
+    pass
