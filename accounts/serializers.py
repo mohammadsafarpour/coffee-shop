@@ -90,3 +90,7 @@ class UserManagementSerializer(serializers.ModelSerializer):
 
 class ProductIdSerializer(serializers.Serializer):
     product_id = serializers.IntegerField()
+
+class JWTLoginSerializer(serializers.Serializer):
+    phone = serializers.CharField(max_length=11)
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
