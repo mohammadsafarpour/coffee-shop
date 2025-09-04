@@ -143,9 +143,18 @@ class ProfileViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
+#--------------new for test-------------------
+    def get_serializer_class(self):
+        if self.action == 'update_my_profile':
+            return ProfileSerializer
+        if self.action == 'view_my_favorites':
+            return ProfileFavoritesSerializer
+        return UserSerializer
+#------------------end-----------------------
+
     @extend_schema(responses=UserSerializer)
     @action(detail=False, methods=['get'], url_path='me')
-    def view_my_profile(self, request):
+    def me(self, request): #view_my_profile -> me
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
 
