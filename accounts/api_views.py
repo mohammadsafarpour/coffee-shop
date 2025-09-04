@@ -15,6 +15,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
 
 from products.models import Product
 from .models import Profile, OTPRequest
@@ -277,7 +278,15 @@ class JWTLoginView(APIView):
         
         user = authenticate(username=phone, password=password)
         
-        if user is not None:
+        if user: # is not None:
+            # outstanding_tokens = OutstandingToken.objects.filter(user=user)
+
+            # for token in outstanding_tokens:
+            #     try:
+            #         RefreshToken(out_token.token).blacklist()
+            #     except Exception:
+            #         pass 
+
             refresh = RefreshToken.for_user(user)
             return Response({
                 'refresh': str(refresh),
